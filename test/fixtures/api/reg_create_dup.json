@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "cash_register_name_taken",
+    "message": "cash register name is already in use in this company",
+    "fields": {
+      "name": "cash register name is already in use in this company"
+    }
+  }
+}

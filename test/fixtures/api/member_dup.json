@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "username_taken",
+    "message": "username is already in use in this company",
+    "fields": {
+      "username": "username is already in use in this company"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+# Builds the desktop apps. Download them from the run's "Artifacts"
+# section, or from the GitHub release when a tag like v1.0.1 is pushed.
+name: Build desktop apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.44.4'
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build windows --release
+      - name: Zip
+        shell: pwsh
+        run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath CashRegister-windows.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CashRegister-windows
+          path: CashRegister-windows.zip
+      - if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: CashRegister-windows.zip
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build macos --release
+      - name: Zip
+        run: |
+          cd build/macos/Build/Products/Release
+          ditto -c -k --keepParent "Cash Register.app" "$GITHUB_WORKSPACE/CashRegister-macos.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CashRegister-macos
+          path: CashRegister-macos.zip
+      - if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: CashRegister-macos.zip

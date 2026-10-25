@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "deadline_required",
+    "message": "deadline is required for obligation-opening records",
+    "fields": {
+      "deadline": "deadline is required for obligation-opening records"
+    }
+  }
+}

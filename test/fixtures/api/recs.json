@@ -1,0 +1,238 @@
+[
+  {
+    "id": "5509d28d-4e20-455f-aa4e-289b0a4c1590",
+    "type": "payable_settled",
+    "parent_record_id": "762aed39-0815-4883-93f7-3cb6304dda60",
+    "amount": 30000,
+    "deadline": null,
+    "note": "",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:23.352741Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": {
+      "id": "762aed39-0815-4883-93f7-3cb6304dda60",
+      "type": "payable_opened",
+      "amount": 30000,
+      "deadline": "2026-12-31T00:00:00Z",
+      "note": "Owe supplier",
+      "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "created_at": "2026-10-21T13:39:12.458242Z"
+    },
+    "children": []
+  },
+  {
+    "id": "4b780c3d-f098-47e6-9ec5-614e90e7bf0b",
+    "type": "receivable_settled",
+    "parent_record_id": "f11f9f84-9671-4291-984f-5114542920e3",
+    "amount": 10000,
+    "deadline": null,
+    "note": "",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:23.177867Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": {
+      "id": "f11f9f84-9671-4291-984f-5114542920e3",
+      "type": "receivable_opened",
+      "amount": 10000,
+      "deadline": "2026-12-31T00:00:00Z",
+      "note": "Loan to Bob",
+      "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "created_at": "2026-10-21T13:39:12.410283Z"
+    },
+    "children": []
+  },
+  {
+    "id": "cec66417-abc6-473a-9f63-63d141e1c757",
+    "type": "accrual_income_settled",
+    "parent_record_id": "6a3b2c13-08bd-4728-9909-be5ace79fa0d",
+    "amount": 20000,
+    "deadline": null,
+    "note": "Partial",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:22.96264Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": {
+      "id": "6a3b2c13-08bd-4728-9909-be5ace79fa0d",
+      "type": "accrual_income",
+      "amount": 50000,
+      "deadline": "2026-12-31T00:00:00Z",
+      "note": "Invoice 42",
+      "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "created_at": "2026-10-21T13:39:12.319212Z"
+    },
+    "children": []
+  },
+  {
+    "id": "762aed39-0815-4883-93f7-3cb6304dda60",
+    "type": "payable_opened",
+    "amount": 30000,
+    "deadline": "2026-12-31T00:00:00Z",
+    "note": "Owe supplier",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:12.458242Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": null,
+    "children": [
+      {
+        "id": "5509d28d-4e20-455f-aa4e-289b0a4c1590",
+        "type": "payable_settled",
+        "parent_record_id": "762aed39-0815-4883-93f7-3cb6304dda60",
+        "amount": 30000,
+        "deadline": null,
+        "note": "",
+        "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+        "created_at": "2026-10-21T13:39:23.352741Z"
+      }
+    ]
+  },
+  {
+    "id": "f11f9f84-9671-4291-984f-5114542920e3",
+    "type": "receivable_opened",
+    "amount": 10000,
+    "deadline": "2026-12-31T00:00:00Z",
+    "note": "Loan to Bob",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:12.410283Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": null,
+    "children": [
+      {
+        "id": "4b780c3d-f098-47e6-9ec5-614e90e7bf0b",
+        "type": "receivable_settled",
+        "parent_record_id": "f11f9f84-9671-4291-984f-5114542920e3",
+        "amount": 10000,
+        "deadline": null,
+        "note": "",
+        "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+        "created_at": "2026-10-21T13:39:23.177867Z"
+      }
+    ]
+  },
+  {
+    "id": "6a3b2c13-08bd-4728-9909-be5ace79fa0d",
+    "type": "accrual_income",
+    "amount": 50000,
+    "deadline": "2026-12-31T00:00:00Z",
+    "note": "Invoice 42",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:12.319212Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": null,
+    "children": [
+      {
+        "id": "cec66417-abc6-473a-9f63-63d141e1c757",
+        "type": "accrual_income_settled",
+        "parent_record_id": "6a3b2c13-08bd-4728-9909-be5ace79fa0d",
+        "amount": 20000,
+        "deadline": null,
+        "note": "Partial",
+        "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+        "created_at": "2026-10-21T13:39:22.96264Z"
+      }
+    ]
+  },
+  {
+    "id": "aa508cd0-8eb7-43d7-9199-ab121e134b7e",
+    "type": "transfer_out",
+    "destination_cash_register_id": "7698e5b4-2289-49d9-91e1-36d3d4872f63",
+    "counterpart_record_id": "64675bca-7955-47d8-a207-60ca9fdc98b0",
+    "amount": 20000,
+    "deadline": null,
+    "note": "To safe",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:12.145802Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": {
+      "id": "7698e5b4-2289-49d9-91e1-36d3d4872f63",
+      "name": "Safe"
+    },
+    "source": null,
+    "parent": null,
+    "children": []
+  },
+  {
+    "id": "d53920ba-9f50-4bd3-85d5-a5076d6a7fa0",
+    "type": "expense",
+    "amount": 15000,
+    "deadline": null,
+    "note": "Supplies",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:12.05448Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": null,
+    "children": []
+  },
+  {
+    "id": "9def5f27-ef0b-49e8-b3e6-67f400d8bffb",
+    "type": "income",
+    "amount": 100000,
+    "deadline": null,
+    "note": "Morning sales",
+    "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:39:12.002659Z",
+    "creator": {
+      "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+      "full_name": "Test Manager",
+      "username": "manager",
+      "is_active": true
+    },
+    "destination": null,
+    "source": null,
+    "parent": null,
+    "children": []
+  }
+]

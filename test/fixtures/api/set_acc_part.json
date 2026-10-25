@@ -1,0 +1,10 @@
+{
+  "id": "cec66417-abc6-473a-9f63-63d141e1c757",
+  "type": "accrual_income_settled",
+  "parent_record_id": "6a3b2c13-08bd-4728-9909-be5ace79fa0d",
+  "amount": 20000,
+  "deadline": null,
+  "note": "Partial",
+  "created_by": "ca4496a7-9faf-4f94-9673-f2d344594329",
+  "created_at": "2026-10-21T13:39:22.96264Z"
+}

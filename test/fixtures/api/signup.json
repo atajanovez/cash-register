@@ -1,0 +1,16 @@
+{
+  "company": {
+    "id": "9ea3af18-6ea6-4181-933f-e5f0d4776a01",
+    "name": "ClaudeTest-10211838",
+    "manager_id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "created_at": "2026-10-21T13:38:14.437156Z"
+  },
+  "manager": {
+    "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "full_name": "Test Manager",
+    "username": "manager",
+    "company_id": "9ea3af18-6ea6-4181-933f-e5f0d4776a01",
+    "is_active": true,
+    "created_at": "2026-10-21T13:38:14.437156Z"
+  }
+}

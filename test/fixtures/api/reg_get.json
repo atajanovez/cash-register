@@ -1,0 +1,28 @@
+{
+  "cash_register": {
+    "id": "9be3bd81-db02-4382-b93e-40f3dd357ce9",
+    "company_id": "9ea3af18-6ea6-4181-933f-e5f0d4776a01",
+    "name": "Main cash",
+    "current_amount": 0,
+    "real_amount": 0,
+    "created_at": "2026-10-21T13:38:52.351915Z",
+    "checked_at": null,
+    "closed_at": null
+  },
+  "members": [
+    {
+      "id": "ff9dd194-100e-4f25-8d95-4ae3815e4647",
+      "full_name": "Alan Turing",
+      "username": "alan",
+      "is_active": true,
+      "access": "view"
+    },
+    {
+      "id": "94b248ad-2471-45a6-9cc7-f3100ba505ae",
+      "full_name": "Grace Hopper",
+      "username": "grace",
+      "is_active": true,
+      "access": "modify"
+    }
+  ]
+}

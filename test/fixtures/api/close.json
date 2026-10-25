@@ -1,0 +1,10 @@
+{
+  "id": "9be3bd81-db02-4382-b93e-40f3dd357ce9",
+  "company_id": "9ea3af18-6ea6-4181-933f-e5f0d4776a01",
+  "name": "Main cash",
+  "current_amount": 115400,
+  "real_amount": 115400,
+  "created_at": "2026-10-21T13:38:52.351915Z",
+  "checked_at": "2026-10-21T13:40:10.160971Z",
+  "closed_at": "2026-10-21T13:40:10.593942Z"
+}

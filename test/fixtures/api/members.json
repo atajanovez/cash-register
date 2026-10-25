@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ff9dd194-100e-4f25-8d95-4ae3815e4647",
+    "full_name": "Alan Turing",
+    "username": "alan",
+    "company_id": "9ea3af18-6ea6-4181-933f-e5f0d4776a01",
+    "is_active": true,
+    "created_at": "2026-10-21T13:38:43.861309Z"
+  },
+  {
+    "id": "94b248ad-2471-45a6-9cc7-f3100ba505ae",
+    "full_name": "Grace Hopper",
+    "username": "grace",
+    "company_id": "9ea3af18-6ea6-4181-933f-e5f0d4776a01",
+    "is_active": true,
+    "created_at": "2026-10-21T13:38:43.713302Z"
+  },
+  {
+    "id": "ca4496a7-9faf-4f94-9673-f2d344594329",
+    "full_name": "Test Manager",
+    "username": "manager",
+    "company_id": "9ea3af18-6ea6-4181-933f-e5f0d4776a01",
+    "is_active": true,
+    "created_at": "2026-10-21T13:38:14.437156Z"
+  }
+]

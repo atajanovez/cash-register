@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "conflict",
+    "message": "current amount is insufficient for this record"
+  }
+}

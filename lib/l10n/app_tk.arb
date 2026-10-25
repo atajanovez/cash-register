@@ -1,0 +1,634 @@
+{
+  "@@locale": "tk",
+  "appName": "Kassa",
+  "cancel": "Ýatyr",
+  "retry": "Gaýtadan synanyş",
+  "couldNotLoad": "Ýüklenip bilinmedi",
+  "clear": "Arassala",
+  "refresh": "Täzele",
+  "loading": "Ýüklenýär…",
+  "logoLabel": "Kassa nyşany",
+  "none": "Ýok",
+  "navRegisters": "Kassalar",
+  "navMembers": "Agzalar",
+  "navAccount": "Profil",
+  "welcomeBack": "Hoş geldiňiz",
+  "loginSubtitle": "Kassalaryňyzy dolandyrmak üçin kompaniýaňyza giriň.",
+  "companyName": "Kompaniýanyň ady",
+  "username": "Ulanyjy ady",
+  "password": "Açar sözi",
+  "logIn": "Giriş",
+  "newHere": "Täze ulanyjymy?",
+  "createCompany": "Kompaniýa döret",
+  "enterCompanyName": "Kompaniýanyň adyny giriziň",
+  "enterUsername": "Ulanyjy adyňyzy giriziň",
+  "enterPassword": "Açar sözüňizi giriziň",
+  "invalidCredentials": "Kompaniýanyň ady, ulanyjy ady ýa-da açar sözi nädogry.",
+  "sessionExpired": "Sessiýaňyzyň möhleti gutardy. Täzeden giriň.",
+  "accountDeactivated": "Hasabyňyz işjeň däl. Dolandyryjyňyza ýüz tutuň.",
+  "showPassword": "Açar sözüni görkez",
+  "hidePassword": "Açar sözüni gizle",
+  "signupTitle": "Kompaniýaňyzy dörediň",
+  "signupSubtitle": "Siz dolandyryjy bolarsyňyz. Soňra agzalary we kassalary goşup bilersiňiz.",
+  "sectionCompany": "Kompaniýa",
+  "sectionManagerAccount": "Dolandyryjynyň hasaby",
+  "companyNameHelper": "Agzalaryňyz ulgama girende şu ady ulanarlar",
+  "fullName": "Ady we familiýasy",
+  "enterFullName": "Ady we familiýany giriziň",
+  "chooseUsername": "Ulanyjy adyny saýlaň",
+  "usernameNoSpaces": "Ulanyjy adynda boşluk bolmaly däl",
+  "choosePassword": "Açar sözüni saýlaň",
+  "passwordTooShort": "Iň azyndan {count} simwol bolmaly",
+  "@passwordTooShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordTooLong": "Iň köp {count} simwol bolup biler",
+  "@passwordTooLong": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordHelper": "Iň azyndan {count} simwol",
+  "@passwordHelper": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPassword": "Açar sözüni gaýtalaň",
+  "passwordsDontMatch": "Açar sözler gabat gelmeýär",
+  "fixHighlighted": "Bellenen meýdançalary düzediň.",
+  "companyNameTaken": "Bu at bilen kompaniýa eýýäm bar",
+  "alreadyHaveCompany": "Kompaniýaňyz barmy?",
+  "brandHeadline": "Her teňňe —\nher kassada.",
+  "brandBody": "Girdejileri, çykdajylary, geçirimleri we bergileri ähli kassalaryňyz boýunça bütin toparyňyz bilen bile hasaba alyň.",
+  "featureDevices": "Telefonda we kompýuterde işleýär",
+  "featureRoles": "Dolandyryjy we agza rollary, her kassa üçin aýratyn rugsat",
+  "featureAudit": "Üýtgedilmeýän ýazgylar — doly hasabat taryhy",
+  "registersTitle": "Kassalar",
+  "searchRegisters": "Kassany gözle",
+  "filterAll": "Ählisi",
+  "filterOpen": "Açyk",
+  "filterChecked": "Barlanan",
+  "filterClosed": "Ýapyk",
+  "filterUnsettled": "Hasaplaşylmadyk",
+  "sort": "Tertiple",
+  "sortCreated": "Döredilen senesi",
+  "sortCurrent": "Nagt pul",
+  "sortReal": "Hakyky mukdar",
+  "sortChecked": "Barlanan senesi",
+  "sortClosed": "Ýapylan senesi",
+  "sortDescending": "Iň täzesi / iň ulusy öňde",
+  "sortAscending": "Iň könesi / iň kiçisi öňde",
+  "newRegister": "Täze kassa",
+  "totalCash": "Jemi nagt pul",
+  "registerCount": "{count} kassa",
+  "@registerCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "noRegisters": "Entek kassa ýok",
+  "noRegistersManager": "Girdejileri we çykdajylary ýazmak üçin ilkinji kassaňyzy dörediň.",
+  "noRegistersMember": "Kassa rugsat bermegini dolandyryjyňyzdan haýyş ediň.",
+  "noMatchingRegisters": "Gabat gelýän kassa ýok",
+  "tryAnotherSearch": "Başga gözleg ýa-da süzgüç synap görüň.",
+  "selectRegister": "Kassany saýlaň",
+  "selectRegisterHint": "Onuň galyndysy we ýazgylary şu ýerde görüner.",
+  "cashOnHand": "Kassadaky nagt pul",
+  "cashFullySettled": "Kassadaky nagt pul · hemmesi hasaplaşyldy",
+  "cashWithReal": "Kassadaky nagt pul · hakyky {amount}",
+  "@cashWithReal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "realAmount": "Hakyky mukdar",
+  "outstanding": "Açyk galan",
+  "realAmountHelp": "Nagt pul, üstüne bu kassa berilmeli bergiler, aýrylan bu kassanyň öz bergileri",
+  "outstandingHelp": "Hakyky mukdar bilen nagt pulyň tapawudy: açyk garaşylýan girdejiler we berlen karzlar, aýrylan alnan karzlar",
+  "statusOpen": "Açyk",
+  "statusChecked": "Barlanan",
+  "statusClosed": "Ýapyk",
+  "ruleOpen": "Ähli görnüşli ýazgylary goşup bolýar.",
+  "ruleChecked": "Barlanan: diňe geçirimleri we hasaplaşyklary goşup bolýar.",
+  "ruleClosed": "Ýapyk: diňe çykýan geçirimleri goşup bolýar.",
+  "registerNotAvailable": "Kassa elýeterli däl",
+  "registerNotAvailableHint": "Ol pozuldy ýa-da size oňa rugsat ýok.",
+  "backToRegisters": "Kassalara dolan",
+  "addRecord": "Ýazgy goş",
+  "recordSaved": "Ýazgy ýatda saklandy",
+  "records": "Ýazgylar",
+  "searchRecords": "Bellik ýa-da adam boýunça gözle",
+  "allTypes": "Ähli görnüşler",
+  "unsettledOnly": "Diňe hasaplaşylmadyk",
+  "noRecords": "Entek ýazgy ýok",
+  "noRecordsCanAdd": "Girdeji, çykdajy ýa-da geçirim ýazmak üçin «Ýazgy goş» düwmesine basyň.",
+  "noRecordsViewOnly": "Bu kassa goşulan ýazgylar şu ýerde görüner.",
+  "noMatchingRecords": "Gabat gelýän ýazgy ýok",
+  "clearFilters": "Süzgüçleri arassala",
+  "loadMoreFailed": "Ýüklenmedi. Gaýtadan synanyşyň",
+  "youCanModify": "Bu kassa ýazgy goşup bilersiňiz",
+  "youCanView": "Bu kassany diňe görüp bilersiňiz",
+  "giveAccess": "Rugsat ber",
+  "membersCount": "{count} agza",
+  "@membersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "check": "Barla",
+  "close": "Ýap",
+  "pin": "Ýokarda berkit",
+  "unpin": "Berkitmäni aýyr",
+  "pinned": "Ýokarda berkidilen",
+  "registerPinned": "Kassa sanawyň ýokarsynda berkidildi",
+  "registerUnpinned": "Kassa berkitmeden aýryldy",
+  "delete": "Poz",
+  "settleBeforeClosing": "Ýapmazdan öň açyk galan {amount} hasaplaşyň.",
+  "@settleBeforeClosing": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "checkTitle": "«{name}» barlansynmy?",
+  "@checkTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "checkMessage": "Barlanandan soň diňe geçirimleri we hasaplaşyklary goşup bolar. Muny yzyna gaýtaryp bolmaýar.",
+  "checkConfirm": "Kassany barla",
+  "closeTitle": "«{name}» ýapylsynmy?",
+  "@closeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "closeMessage": "Ýapyk kassa diňe çykýan geçirimlere rugsat berýär. Muny yzyna gaýtaryp bolmaýar.",
+  "closeConfirm": "Kassany ýap",
+  "deleteTitle": "«{name}» pozulsynmy?",
+  "@deleteTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteMessage": "Kassa we onuň ähli ýazgylary, beýleki kassalara iberen geçirimleri bilen bilelikde, hemişelik pozular.",
+  "registerChecked": "Kassa barlandy",
+  "registerClosed": "Kassa ýapyldy",
+  "registerDeleted": "Kassa pozuldy",
+  "accessUpdated": "Rugsatlar täzelendi",
+  "name": "Ady",
+  "registerNameHint": "meselem, Esasy kassa, Dükan 2, Seýf",
+  "enterName": "Adyny giriziň",
+  "registerNameTaken": "Bu at bilen kassa eýýäm bar",
+  "teamAccess": "Agzalaryň rugsady",
+  "createRegister": "Kassa döret",
+  "accessView": "Görmek",
+  "accessModify": "Üýtgetmek",
+  "noTeamMembers": "Entek agza ýok. Agzalary «Agzalar» bölüminde goşuň, soňra şu ýerde rugsat beriň.",
+  "usernameInactive": "@{username} · işjeň däl",
+  "@usernameInactive": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "accessTitle": "«{name}» kassasyna kim girip biler",
+  "@accessTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "accessSubtitle": "Görmek: galyndyny we ýazgylary görýär. Üýtgetmek: ýazgy hem goşup bilýär.",
+  "saveAccess": "Rugsatlary ýatda sakla",
+  "typeIncome": "Girdeji",
+  "typeIncomeHint": "Alnan pul",
+  "typeExpense": "Çykdajy",
+  "typeExpenseHint": "Harçlanan pul",
+  "typeTransferOut": "Geçirim",
+  "typeTransferOutHint": "Puly başga kassa geçirmek",
+  "typeTransferIn": "Gelen geçirim",
+  "typeTransferInHint": "Başga kassadan geçirilen pul",
+  "typeAccrualIncome": "Garaşylýan girdeji",
+  "typeAccrualIncomeHint": "Gazanylan, ýöne entek alynmadyk pul",
+  "typeReceivableOpened": "Berlen karz",
+  "typeReceivableOpenedHint": "Yzyna gaýtarylmaly berlen pul",
+  "typePayableOpened": "Alnan karz",
+  "typePayableOpenedHint": "Yzyna tölenmeli karz alnan pul",
+  "typeAccrualIncomeSettled": "Girdeji alyndy",
+  "typeAccrualIncomeSettledHint": "Garaşylýan girdeji alyndy",
+  "typeReceivableSettled": "Karz gaýtaryldy",
+  "typeReceivableSettledHint": "Berlen karz yzyna alyndy",
+  "typePayableSettled": "Karz tölendi",
+  "typePayableSettledHint": "Alnan karz yzyna tölendi",
+  "groupCash": "Nagt pul",
+  "groupTransfer": "Geçirim",
+  "groupObligation": "Borçnama açmak",
+  "groupSettlement": "Borçnamany ýapmak",
+  "transferTo": "«{name}» kassasyna",
+  "@transferTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "transferFrom": "«{name}» kassasyndan",
+  "@transferFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "anotherRegister": "başga kassa",
+  "settled": "Hasaplaşyldy",
+  "amountLeft": "{amount} galdy",
+  "@amountLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLeftDue": "{amount} galdy · möhleti {date}",
+  "@amountLeftDue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLeftOverdue": "{amount} galdy · möhleti {date} geçdi",
+  "@amountLeftOverdue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "today": "Şu gün",
+  "yesterday": "Düýn",
+  "detailNote": "Bellik",
+  "detailRecorded": "Senesi",
+  "detailBy": "Kim",
+  "detailTo": "Nirä",
+  "detailFrom": "Nireden",
+  "detailDue": "Möhleti",
+  "detailSettles": "Degişli",
+  "payments": "Tölegler ({count})",
+  "@payments": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "fullySettled": "Doly hasaplaşyldy",
+  "settledAndLeft": "{settled} hasaplaşyldy · {left} galdy",
+  "@settledAndLeft": {
+    "placeholders": {
+      "settled": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "addARecord": "Ýazgy goş",
+  "typesWhenChecked": "Bu kassa barlanan: diňe geçirimleri we hasaplaşyklary goşup bolýar.",
+  "typesWhenClosed": "Bu kassa ýapyk: diňe çykýan geçirimleri goşup bolýar.",
+  "changeType": "Görnüşi üýtget",
+  "saveRecord": "Ýazgyny ýatda sakla",
+  "amount": "Möçber",
+  "availableCash": "Kassada {amount} bar",
+  "@availableCash": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "enterAmount": "Noldan uly möçber giriziň",
+  "onlyCash": "Kassada diňe {amount} bar",
+  "@onlyCash": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "onlyLeftToSettle": "Hasaplaşmak üçin diňe {amount} galdy",
+  "@onlyLeftToSettle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dueDate": "Möhleti",
+  "chooseDate": "Senäni saýlaň",
+  "noteLabel": "Bellik",
+  "errNoteRequired": "Bellik ýazyň",
+  "noteHint": "Näme üçin?",
+  "toRegister": "Haýsy kassa",
+  "loadingRegisters": "Kassalar ýüklenýär…",
+  "noTransferTargets": "Geçirim edip boljak başga açyk kassa ýok",
+  "chooseDestination": "Pul geçiriljek kassany saýlaň",
+  "whichObligation": "Haýsy borçnama",
+  "nothingToSettle": "Bu kassada hasaplaşylmaly zat ýok",
+  "chooseObligation": "Haýsy borçnamanyň hasaplaşylýandygyny saýlaň",
+  "dueOn": "möhleti {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "oldMoneyButton": "Köne puldan geçir",
+  "oldMoneyTitle": "Köne puldan täze pula",
+  "oldMoneyRate": "5 000 köne manat = 1 TMT",
+  "oldMoneyLabel": "Köne pul",
+  "oldMoneySuffix": "köne manat",
+  "oldMoneyResult": "Täze pulda",
+  "oldMoneyEmpty": "Köne pul möçberini giriziň",
+  "oldMoneyUse": "Ulan",
+  "membersTitle": "Agzalar",
+  "addMember": "Agza goş",
+  "memberAdded": "{name} goşuldy",
+  "@memberAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "membersHint": "Kassirleriňizi şu ýerde goşuň, soňra olara kassalara rugsat beriň. Olar kompaniýanyň ady, öz ulanyjy ady we açar sözi bilen girýärler.",
+  "roleManager": "Dolandyryjy",
+  "roleMember": "Agza",
+  "you": "Siz",
+  "inactive": "Işjeň däl",
+  "addMemberSubtitle": "Olar siziň kompaniýaňyzyň ady we şu maglumatlar bilen girerler.",
+  "newPassword": "Täze açar sözi",
+  "newPasswordHelper": "Täze açar sözüni oňa ýüzbe-ýüz aýdyň",
+  "changePassword": "Açar sözüni üýtget",
+  "passwordChanged": "{name} üçin açar sözi üýtgedildi",
+  "@passwordChanged": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "access": "Rugsat",
+  "active": "Işjeň",
+  "activeOn": "Ulgama girip, öz kassalary bilen işläp bilýär",
+  "activeOff": "Ulgama girip bilmeýär",
+  "deactivateTitle": "{name} işjeň däl edilsinmi?",
+  "@deactivateTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deactivateMessage": "Ol derrew ulgamdan çykarylar we siz ony täzeden işjeňleşdirýänçäňiz girip bilmez. Onuň ýazgylary saklanýar.",
+  "deactivate": "Işjeň däl et",
+  "memberActivated": "{name} işjeňleşdirildi",
+  "@memberActivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDeactivated": "{name} işjeň däl edildi",
+  "@memberDeactivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "accountTitle": "Profil",
+  "company": "Kompaniýa",
+  "sessionValidUntil": "Sessiýanyň möhleti",
+  "theme": "Tema",
+  "themeSystem": "Ulgam",
+  "themeLight": "Ýagty",
+  "themeDark": "Garaňky",
+  "themeSystemHint": "Telefonyňyzyň ýa-da kompýuteriňiziň sazlamasy boýunça",
+  "logOut": "Ulgamdan çyk",
+  "logOutTitle": "Ulgamdan çykmalymy?",
+  "logOutMessage": "Täzeden girmek üçin açar sözüňiz gerek bolar.",
+  "errNetwork": "Serwere birigip bolmady. Internet birikmäňizi barlaň.",
+  "errTimeout": "Serwer gaty uzak jogap berdi. Gaýtadan synanyşyň.",
+  "errCertificate": "Serweriň howpsuzlyk şahadatnamasy nädogry.",
+  "errBadResponse": "Serwerden garaşylmadyk jogap geldi. Gaýtadan synanyşyň.",
+  "errServer": "Serwerde näsazlyk ýüze çykdy. Soňrak synanyşyň.",
+  "errUnexpected": "Garaşylmadyk ýalňyşlyk ýüze çykdy.",
+  "errUnauthorized": "Sessiýaňyzyň möhleti gutardy. Täzeden giriň.",
+  "errForbidden": "Bu hereket üçin rugsadyňyz ýok.",
+  "errNotFound": "Tapylmady ýa-da size rugsat ýok.",
+  "errInsufficientFunds": "Kassada ýeterlik nagt pul ýok.",
+  "errSettlementTooLarge": "Hasaplaşyk möçberi galan bergiden köp.",
+  "errSettlementMismatch": "Hasaplaşygyň görnüşi borçnama gabat gelmeýär.",
+  "errRecordNotAllowed": "Kassanyň häzirki ýagdaýynda bu ýazgyny goşup bolmaýar.",
+  "errDestinationUnavailable": "Geçirim edilýän kassa elýeterli däl ýa-da oňa üýtgetmek rugsadyňyz ýok.",
+  "errMustBeChecked": "Kassany ýapmazdan öň ony barlamaly.",
+  "errAmountsMustMatch": "Ýapmak üçin nagt pul bilen hakyky mukdar deň bolmaly.",
+  "errNotSettled": "Ýapmazdan öň ähli borçnamalary hasaplaşmaly.",
+  "errMustBeClosed": "Kassany pozmazdan öň ony ýapmaly.",
+  "errManagerCannotDeactivate": "Kompaniýanyň dolandyryjysyny işjeň däl edip bolmaýar.",
+  "errUsernameTaken": "Bu ulanyjy ady eýýäm ulanylýar",
+  "errDeadlineRequired": "Möhleti görkeziň",
+  "errInvalidRequest": "Maglumatlar nädogry: {details}",
+  "@errInvalidRequest": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "errConflict": "Amaly ýerine ýetirip bolmady: {details}",
+  "@errConflict": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "realShort": "hakyky {amount}",
+  "@realShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "open": "Aç",
+  "more": "Başga hereketler",
+  "createdOn": "Döredilen senesi: {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "colRecord": "Ýazgy",
+  "colMember": "Agza",
+  "colTime": "Wagt",
+  "colAmount": "Mukdar",
+  "dayRecordCount": "{count} ýazgy",
+  "@dayRecordCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "membersSubtitle": "Kassalara girip bilýän adamlar",
+  "syncTitle": "Sinhronlama",
+  "syncOffline": "Internet ýok",
+  "syncOfflineWaiting": "Internet ýok · {count} garaşýar",
+  "@syncOfflineWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncSyncing": "Sinhronlanýar…",
+  "syncUpToDate": "Hemmesi sinhronlandy",
+  "syncPending": "{count} üýtgeşme ugradylýar",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncRejected": "{count} üýtgeşme kabul edilmedi",
+  "@syncRejected": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncError": "Sinhronlamak başartmady",
+  "syncLastAt": "Soňky sinhronlama: {time}",
+  "@syncLastAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "Entek sinhronlanmady",
+  "syncNow": "Häzir sinhronla",
+  "syncOfflineHint": "Işläp bilersiňiz: üýtgeşmeler enjamda saklanýar we internet gelende özbaşdak ugradylar.",
+  "syncPendingTitle": "Ugradylmadyk üýtgeşmeler",
+  "syncRejectedTitle": "Serwer kabul etmedi",
+  "syncRejectedHint": "Bu üýtgeşmeler ugradylmady. Aýyryň we gerek bolsa täzeden giriziň.",
+  "syncDiscard": "Aýyr",
+  "syncNothingWaiting": "Ugradylmadyk üýtgeşme ýok.",
+  "pendingBadge": "Ugradylmady",
+  "savedOffline": "Enjamda saklandy — internet gelende ugradylar",
+  "noDataOffline": "Maglumat entek ýok",
+  "noDataOfflineHint": "Ilkinji gezek maglumatlary almak üçin internete birikiň. Soňra internetsiz hem işläp bilersiňiz.",
+  "logOutUnsent": "Ugradylmadyk {count} üýtgeşme bar. Häzir çyksaňyz, olar ýiter.",
+  "@logOutUnsent": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "opRecordCreate": "{type} · {amount}",
+  "@opRecordCreate": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "opRegisterCreate": "Täze kassa: {name}",
+  "@opRegisterCreate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "opRegisterCheck": "Barlamak: {name}",
+  "@opRegisterCheck": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "opRegisterClose": "Ýapmak: {name}",
+  "@opRegisterClose": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "opRegisterDelete": "Pozmak: {name}",
+  "@opRegisterDelete": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "opRegisterAccess": "Rugsatlar: {name}",
+  "@opRegisterAccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "needsInternet": "Munuň üçin internet gerek."
+}
