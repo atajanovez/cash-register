@@ -1959,6 +1959,282 @@ abstract class AppLocalizations {
   /// In tk, this message translates to:
   /// **'Munuň üçin internet gerek.'**
   String get needsInternet;
+
+  /// No description provided for @serverTitle.
+  ///
+  /// In tk, this message translates to:
+  /// **'Serwer'**
+  String get serverTitle;
+
+  /// No description provided for @serverSubtitle.
+  ///
+  /// In tk, this message translates to:
+  /// **'Programmanyň haýsy serwere ýüz tutýandygy.'**
+  String get serverSubtitle;
+
+  /// No description provided for @serverApiUrl.
+  ///
+  /// In tk, this message translates to:
+  /// **'Esasy serwer'**
+  String get serverApiUrl;
+
+  /// No description provided for @serverApiUrlHelp.
+  ///
+  /// In tk, this message translates to:
+  /// **'Giriş, kassalar, ýazgylar we agzalar şu salga gidýär.'**
+  String get serverApiUrlHelp;
+
+  /// No description provided for @serverSyncUrl.
+  ///
+  /// In tk, this message translates to:
+  /// **'Sinhronlamak üçin serwer'**
+  String get serverSyncUrl;
+
+  /// No description provided for @serverSyncUrlHelp.
+  ///
+  /// In tk, this message translates to:
+  /// **'Diňe «Serwerleri sinhronla» düwmesi şu salga ýüz tutýar. Boş goýsaňyz, düwme görünmeýär.'**
+  String get serverSyncUrlHelp;
+
+  /// No description provided for @serverUrlHint.
+  ///
+  /// In tk, this message translates to:
+  /// **'Mysal: http://192.168.1.158:8083'**
+  String get serverUrlHint;
+
+  /// No description provided for @serverInvalidUrl.
+  ///
+  /// In tk, this message translates to:
+  /// **'Dogry salga ýazyň, mysal: http://192.168.1.158:8083'**
+  String get serverInvalidUrl;
+
+  /// No description provided for @serverUseDefault.
+  ///
+  /// In tk, this message translates to:
+  /// **'Adaty serweri ulan'**
+  String get serverUseDefault;
+
+  /// No description provided for @serverSaved.
+  ///
+  /// In tk, this message translates to:
+  /// **'Serwer sazlamalary ýatda saklandy'**
+  String get serverSaved;
+
+  /// No description provided for @serverNotSet.
+  ///
+  /// In tk, this message translates to:
+  /// **'Goýulmady'**
+  String get serverNotSet;
+
+  /// No description provided for @serverEdit.
+  ///
+  /// In tk, this message translates to:
+  /// **'Üýtget'**
+  String get serverEdit;
+
+  /// No description provided for @serverSave.
+  ///
+  /// In tk, this message translates to:
+  /// **'Ýatda sakla'**
+  String get serverSave;
+
+  /// No description provided for @serverSyncNow.
+  ///
+  /// In tk, this message translates to:
+  /// **'Serwerleri sinhronla'**
+  String get serverSyncNow;
+
+  /// No description provided for @serverSyncRunning.
+  ///
+  /// In tk, this message translates to:
+  /// **'Serwerler sinhronlanýar…'**
+  String get serverSyncRunning;
+
+  /// No description provided for @serverSyncDone.
+  ///
+  /// In tk, this message translates to:
+  /// **'Serwerler sinhronlandy'**
+  String get serverSyncDone;
+
+  /// No description provided for @serverSyncHint.
+  ///
+  /// In tk, this message translates to:
+  /// **'Ýerli serwer bulut serweri bilen maglumat çalşýar, soňra täze maglumatlar şu ýere ýüklenýär.'**
+  String get serverSyncHint;
+
+  /// No description provided for @errWrongServer.
+  ///
+  /// In tk, this message translates to:
+  /// **'Bu kompaniýanyň maglumatlary başga serwerde üýtgedilýär. Şol serwere birikiň.'**
+  String get errWrongServer;
+
+  /// No description provided for @syncLoginTitle.
+  ///
+  /// In tk, this message translates to:
+  /// **'Sinhron serwerine giriş'**
+  String get syncLoginTitle;
+
+  /// No description provided for @syncLoginMessage.
+  ///
+  /// In tk, this message translates to:
+  /// **'{server} serweriniň öz girişi bar. @{username} üçin açar sözüni giriziň.'**
+  String syncLoginMessage(String server, String username);
+
+  /// No description provided for @syncLoginButton.
+  ///
+  /// In tk, this message translates to:
+  /// **'Gir we sinhronla'**
+  String get syncLoginButton;
+
+  /// No description provided for @serverChangeTitle.
+  ///
+  /// In tk, this message translates to:
+  /// **'Serwer üýtgeýär'**
+  String get serverChangeTitle;
+
+  /// No description provided for @serverChangeMessage.
+  ///
+  /// In tk, this message translates to:
+  /// **'Täze serwere geçmek üçin hasapdan çykyp, gaýtadan girmeli. Bu enjamdaky maglumatlar täzeden ýüklener.'**
+  String get serverChangeMessage;
+
+  /// No description provided for @serverChangeUnsent.
+  ///
+  /// In tk, this message translates to:
+  /// **'Ugradylmadyk {count} üýtgeşme bar. Serweri häzir üýtgetseňiz, olar ýiter.'**
+  String serverChangeUnsent(String count);
+
+  /// No description provided for @serverChangeConfirm.
+  ///
+  /// In tk, this message translates to:
+  /// **'Çyk we üýtget'**
+  String get serverChangeConfirm;
+
+  /// No description provided for @periodAll.
+  ///
+  /// In tk, this message translates to:
+  /// **'Ähli wagt'**
+  String get periodAll;
+
+  /// No description provided for @periodToday.
+  ///
+  /// In tk, this message translates to:
+  /// **'Şu gün'**
+  String get periodToday;
+
+  /// No description provided for @periodWeek.
+  ///
+  /// In tk, this message translates to:
+  /// **'Şu hepde'**
+  String get periodWeek;
+
+  /// No description provided for @periodMonth.
+  ///
+  /// In tk, this message translates to:
+  /// **'Şu aý'**
+  String get periodMonth;
+
+  /// No description provided for @periodCustom.
+  ///
+  /// In tk, this message translates to:
+  /// **'Senäni saýla…'**
+  String get periodCustom;
+
+  /// No description provided for @allMembers.
+  ///
+  /// In tk, this message translates to:
+  /// **'Ähli agzalar'**
+  String get allMembers;
+
+  /// No description provided for @totalsIn.
+  ///
+  /// In tk, this message translates to:
+  /// **'Girdi {amount}'**
+  String totalsIn(String amount);
+
+  /// No description provided for @totalsOut.
+  ///
+  /// In tk, this message translates to:
+  /// **'Çykdy {amount}'**
+  String totalsOut(String amount);
+
+  /// No description provided for @overviewTitle.
+  ///
+  /// In tk, this message translates to:
+  /// **'Umumy syn'**
+  String get overviewTitle;
+
+  /// No description provided for @overviewHint.
+  ///
+  /// In tk, this message translates to:
+  /// **'Jikme-jiklikler üçin çepden kassa saýlaň.'**
+  String get overviewHint;
+
+  /// No description provided for @dueTitle.
+  ///
+  /// In tk, this message translates to:
+  /// **'Möhletli bergiler'**
+  String get dueTitle;
+
+  /// No description provided for @dueEmpty.
+  ///
+  /// In tk, this message translates to:
+  /// **'Ýakyn {days} günde möhleti ýetýän bergi ýok.'**
+  String dueEmpty(String days);
+
+  /// No description provided for @overdueCount.
+  ///
+  /// In tk, this message translates to:
+  /// **'{count} möhleti geçdi'**
+  String overdueCount(String count);
+
+  /// No description provided for @dueSoonCount.
+  ///
+  /// In tk, this message translates to:
+  /// **'{count} ýakynda'**
+  String dueSoonCount(String count);
+
+  /// No description provided for @recentTitle.
+  ///
+  /// In tk, this message translates to:
+  /// **'Soňky ýazgylar'**
+  String get recentTitle;
+
+  /// No description provided for @recentEmpty.
+  ///
+  /// In tk, this message translates to:
+  /// **'Entek hiç bir kassada ýazgy ýok.'**
+  String get recentEmpty;
+
+  /// No description provided for @copyAmount.
+  ///
+  /// In tk, this message translates to:
+  /// **'Mukdary göçür'**
+  String get copyAmount;
+
+  /// No description provided for @amountCopied.
+  ///
+  /// In tk, this message translates to:
+  /// **'Mukdar göçürildi'**
+  String get amountCopied;
+
+  /// No description provided for @statusFilter.
+  ///
+  /// In tk, this message translates to:
+  /// **'Ýagdaýy boýunça süz'**
+  String get statusFilter;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In tk, this message translates to:
+  /// **'{column} boýunça tertiple'**
+  String sortBy(String column);
+
+  /// No description provided for @pickRegister.
+  ///
+  /// In tk, this message translates to:
+  /// **'Haýsy kassa ýazgy goşmaly?'**
+  String get pickRegister;
 }
 
 class _AppLocalizationsDelegate

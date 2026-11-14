@@ -35,6 +35,7 @@ class FakeRemote extends RemoteApi {
     {'id': _me, 'full_name': 'Ada Lovelace', 'username': 'ada'},
   ];
   final syncRequests = <Json>[];
+  final createBodies = <Json>[];
   Json Function(Json body)? onSync;
   ApiException? rejectNextRecord;
   var _seq = 0;
@@ -86,6 +87,7 @@ class FakeRemote extends RemoteApi {
   @override
   Future<Json> createRegister(Json body) async {
     _net();
+    createBodies.add(body);
     final id = 'srv-r${++_seq}';
     serverRegisters[id] = _register(id, body['name'] as String);
     return serverRegisters[id]!;
@@ -94,6 +96,7 @@ class FakeRemote extends RemoteApi {
   @override
   Future<Json> createRecord(String registerId, Json body) async {
     _net();
+    createBodies.add(body);
     final reject = rejectNextRecord;
     if (reject != null) {
       rejectNextRecord = null;
@@ -354,6 +357,9 @@ void main() {
 
       await engine.sync();
 
+      // Each create carries the id it was made with, so a retry after a
+      // lost reply cannot make a second copy.
+      expect(remote.createBodies.map((b) => b['id']), ['local-r', 'local-rec']);
       expect(store.resolve('local-r'), 'srv-r1');
       // The record went into the register under its server id.
       expect(remote.records['srv-r1']!.single['amount'], 250);
@@ -399,6 +405,29 @@ void main() {
         expect(store.view.register('r1')!.currentAmount, 140);
       },
     );
+
+    test('a create the server already has counts as sent', () async {
+      remote.syncWorks = false;
+      remote.serverRegisters['r1'] = _register('r1', 'Main');
+      store.snapshot.registers['r1'] = Map.of(remote.serverRegisters['r1']!);
+      // The first try reached the server but its reply was lost.
+      remote.rejectNextRecord = const ApiException(
+        code: 'duplicate_value',
+        message: 'duplicate value',
+        statusCode: 409,
+      );
+      store.add(
+        'record.create',
+        entityId: 'rec-1',
+        payload: {'cash_register_id': 'r1', 'type': 'income', 'amount': 40},
+      );
+
+      await engine.sync();
+
+      expect(store.rejected, isEmpty);
+      expect(store.outbox, isEmpty);
+      expect(engine.status.phase, SyncPhase.idle);
+    });
 
     test('online, a refused change throws so the form can show why', () async {
       remote.syncWorks = false;

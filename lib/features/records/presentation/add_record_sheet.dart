@@ -11,6 +11,7 @@ import '../../../core/widgets/common.dart';
 import '../../../core/widgets/error_banner.dart';
 import '../../../core/widgets/old_money_dialog.dart';
 import '../../../core/widgets/sheet_scaffold.dart';
+import '../../../core/widgets/shortcuts.dart';
 import '../../../l10n/l10n.dart';
 import '../../registers/application/registers_providers.dart';
 import '../../registers/domain/cash_register.dart';
@@ -161,6 +162,7 @@ class _AddRecordSheetState extends ConsumerState<AddRecordSheet> {
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (e) {
       if (!mounted) return;
+      if (!isWide(context)) HapticFeedback.mediumImpact();
       final l = context.l10n;
       setState(() {
         _saving = false;
@@ -178,127 +180,133 @@ class _AddRecordSheetState extends ConsumerState<AddRecordSheet> {
     }
     final l = context.l10n;
 
-    return SheetScaffold(
-      title: type.label(l),
-      subtitle: type.hint(l),
-      leading: widget.type == null
-          ? IconButton(
-              tooltip: l.changeType,
-              icon: const Icon(LucideIcons.arrowLeft),
-              onPressed: _saving ? null : () => setState(() => _type = null),
-            )
-          : null,
-      primaryLabel: l.saveRecord,
-      busy: _saving,
-      onPrimary: _save,
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (type.isSettlement) ...[
-              _ParentPicker(
-                registerId: _register.id,
-                openingType: type.settles!,
-                selected: _parent,
-                locked: widget.parent != null,
-                enabled: !_saving,
-                errorText: _fieldErrors['parent_record_id'],
-                onPick: _pickParent,
+    return KeyboardShortcuts(
+      bindings: {cmd(LogicalKeyboardKey.enter): _save},
+      child: SheetScaffold(
+        title: type.label(l),
+        subtitle: type.hint(l),
+        leading: widget.type == null
+            ? IconButton(
+                tooltip: l.changeType,
+                icon: const Icon(LucideIcons.arrowLeft),
+                onPressed: _saving ? null : () => setState(() => _type = null),
+              )
+            : null,
+        primaryLabel: l.saveRecord,
+        busy: _saving,
+        onPrimary: _save,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (type.isSettlement) ...[
+                _ParentPicker(
+                  registerId: _register.id,
+                  openingType: type.settles!,
+                  selected: _parent,
+                  locked: widget.parent != null,
+                  enabled: !_saving,
+                  errorText: _fieldErrors['parent_record_id'],
+                  onPick: _pickParent,
+                ),
+                const SizedBox(height: 16),
+              ],
+              if (type.needsDestination) ...[
+                _DestinationPicker(
+                  current: _register,
+                  selectedId: _destinationId,
+                  enabled: !_saving,
+                  errorText: _fieldErrors['destination_cash_register_id'],
+                  onChanged: (id) => setState(() => _destinationId = id),
+                ),
+                const SizedBox(height: 16),
+              ],
+              TextFormField(
+                controller: _amount,
+                enabled: !_saving && (!type.isSettlement || _parent != null),
+                autofocus: !type.isSettlement && !type.needsDestination,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [AmountInputFormatter()],
+                textInputAction: TextInputAction.next,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontFeatures: tabularFigures,
+                ),
+                decoration: InputDecoration(
+                  labelText: l.amount,
+                  hintText: '0,00',
+                  suffixText: Money.currency,
+                  prefixIcon: const Icon(LucideIcons.banknote),
+                  helperText: type.needsFunds
+                      ? l.availableCash(Money.format(_register.currentAmount))
+                      : null,
+                  errorText: _fieldErrors['amount'],
+                ),
+                validator: _validateAmount,
               ),
-              const SizedBox(height: 16),
-            ],
-            if (type.needsDestination) ...[
-              _DestinationPicker(
-                current: _register,
-                selectedId: _destinationId,
-                enabled: !_saving,
-                errorText: _fieldErrors['destination_cash_register_id'],
-                onChanged: (id) => setState(() => _destinationId = id),
-              ),
-              const SizedBox(height: 16),
-            ],
-            TextFormField(
-              controller: _amount,
-              enabled: !_saving && (!type.isSettlement || _parent != null),
-              autofocus: !type.isSettlement && !type.needsDestination,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: [AmountInputFormatter()],
-              textInputAction: TextInputAction.next,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontFeatures: tabularFigures),
-              decoration: InputDecoration(
-                labelText: l.amount,
-                hintText: '0,00',
-                suffixText: Money.currency,
-                prefixIcon: const Icon(LucideIcons.banknote),
-                helperText: type.needsFunds
-                    ? l.availableCash(Money.format(_register.currentAmount))
-                    : null,
-                errorText: _fieldErrors['amount'],
-              ),
-              validator: _validateAmount,
-            ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: TextButton.icon(
-                onPressed: _saving || (type.isSettlement && _parent == null)
-                    ? null
-                    : _convertOldMoney,
-                icon: const Icon(LucideIcons.coins, size: 18),
-                label: Text(l.oldMoneyButton),
-              ),
-            ),
-            if (type.needsDeadline) ...[
-              const SizedBox(height: 16),
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: _saving ? null : _pickDeadline,
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: l.dueDate,
-                    prefixIcon: const Icon(LucideIcons.calendar),
-                    suffixIcon: const Icon(LucideIcons.calendarDays),
-                    errorText: _fieldErrors['deadline'],
-                  ),
-                  child: Text(
-                    _deadline == null ? l.chooseDate : Dates.date(_deadline!),
-                  ),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton.icon(
+                  onPressed: _saving || (type.isSettlement && _parent == null)
+                      ? null
+                      : _convertOldMoney,
+                  icon: const Icon(LucideIcons.coins, size: 18),
+                  label: Text(l.oldMoneyButton),
                 ),
               ),
-            ],
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _note,
-              enabled: !_saving,
-              textCapitalization: TextCapitalization.sentences,
-              maxLines: 2,
-              minLines: 1,
-              maxLength: 500,
-              maxLengthEnforcement: MaxLengthEnforcement.enforced,
-              decoration: InputDecoration(
-                labelText: l.noteLabel,
-                hintText: l.noteHint,
-                prefixIcon: const Icon(LucideIcons.stickyNote),
-                counterText: '',
+              if (type.needsDeadline) ...[
+                const SizedBox(height: 16),
+                InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: _saving ? null : _pickDeadline,
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: l.dueDate,
+                      prefixIcon: const Icon(LucideIcons.calendar),
+                      suffixIcon: const Icon(LucideIcons.calendarDays),
+                      errorText: _fieldErrors['deadline'],
+                    ),
+                    child: Text(
+                      _deadline == null ? l.chooseDate : Dates.date(_deadline!),
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _note,
+                enabled: !_saving,
+                textCapitalization: TextCapitalization.sentences,
+                maxLines: 2,
+                minLines: 1,
+                maxLength: 500,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                decoration: InputDecoration(
+                  labelText: l.noteLabel,
+                  hintText: l.noteHint,
+                  prefixIcon: const Icon(LucideIcons.stickyNote),
+                  counterText: '',
+                ),
+                validator: (value) =>
+                    (value ?? '').trim().isEmpty ? l.errNoteRequired : null,
               ),
-              validator: (value) =>
-                  (value ?? '').trim().isEmpty ? l.errNoteRequired : null,
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 8),
-              ErrorBanner(message: _error!),
+              if (_error != null) ...[
+                const SizedBox(height: 8),
+                ErrorBanner(message: _error!),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
+/// The types this register accepts, grouped, as a two-column grid. Income
+/// and expense, the everyday ones, come first. On desktop the number keys
+/// pick a type.
 class _TypePicker extends StatelessWidget {
   const _TypePicker({required this.register, required this.onPick});
 
@@ -309,77 +317,189 @@ class _TypePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = context.l10n;
-    final allowed = RecordType.values
-        .where((t) => t.creatable && t.allowedIn(register.status))
-        .toList();
+    final wide = isWide(context);
+    final allowed = [
+      for (final group in RecordGroup.values)
+        ...RecordType.values.where(
+          (t) =>
+              t.group == group && t.creatable && t.allowedIn(register.status),
+        ),
+    ];
+    const digits = [
+      LogicalKeyboardKey.digit1,
+      LogicalKeyboardKey.digit2,
+      LogicalKeyboardKey.digit3,
+      LogicalKeyboardKey.digit4,
+      LogicalKeyboardKey.digit5,
+      LogicalKeyboardKey.digit6,
+      LogicalKeyboardKey.digit7,
+      LogicalKeyboardKey.digit8,
+      LogicalKeyboardKey.digit9,
+    ];
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(16, isWide(context) ? 24 : 0, 16, 16),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(l.addARecord, style: theme.textTheme.titleLarge),
-            ),
-            if (register.status != RegisterStatus.open)
+    return KeyboardShortcuts(
+      bindings: {
+        if (wide)
+          for (final (i, type) in allowed.take(digits.length).indexed)
+            SingleActivator(digits[i]): () => onPick(type),
+      },
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(16, wide ? 24 : 0, 16, 16),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
-                child: Text(
-                  register.status == RegisterStatus.checked
-                      ? l.typesWhenChecked
-                      : l.typesWhenClosed,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(l.addARecord, style: theme.textTheme.titleLarge),
               ),
-            for (final group in RecordGroup.values)
-              if (allowed.any((t) => t.group == group)) ...[
-                // A lone type already says what the group is.
-                if (allowed.where((t) => t.group == group).length > 1)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 16, 8, 6),
-                    child: SectionTitle(group.label(l)),
-                  )
-                else
-                  const SizedBox(height: 16),
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    children: [
-                      for (final (i, type)
-                          in allowed
-                              .where((t) => t.group == group)
-                              .indexed) ...[
-                        if (i > 0) const Divider(indent: 68),
-                        ListTile(
-                          shape: const RoundedRectangleBorder(),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 2,
-                          ),
-                          leading: RecordTypeIcon(type: type),
-                          title: Text(
-                            type.label(l),
-                            style: theme.textTheme.titleSmall,
-                          ),
-                          subtitle: Text(type.hint(l)),
-                          trailing: Icon(
-                            LucideIcons.chevronRight,
-                            size: 18,
-                            color: context.palette.textSubtle,
-                          ),
-                          onTap: () => onPick(type),
-                        ),
-                      ],
-                    ],
+              if (register.status != RegisterStatus.open)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                  child: Text(
+                    register.status == RegisterStatus.checked
+                        ? l.typesWhenChecked
+                        : l.typesWhenClosed,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
+              for (final group in RecordGroup.values)
+                if (allowed.any((t) => t.group == group)) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
+                    child: SectionTitle(group.label(l)),
+                  ),
+                  _TypeGrid(
+                    types: allowed.where((t) => t.group == group).toList(),
+                    keyOf: wide
+                        ? (t) {
+                            final i = allowed.indexOf(t);
+                            return i < digits.length ? '${i + 1}' : null;
+                          }
+                        : (_) => null,
+                    onPick: onPick,
+                  ),
+                ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TypeGrid extends StatelessWidget {
+  const _TypeGrid({
+    required this.types,
+    required this.keyOf,
+    required this.onPick,
+  });
+
+  final List<RecordType> types;
+  final String? Function(RecordType) keyOf;
+  final ValueChanged<RecordType> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = <List<RecordType>>[
+      for (var i = 0; i < types.length; i += 2)
+        types.sublist(i, (i + 2).clamp(0, types.length)),
+    ];
+    return Column(
+      children: [
+        for (final (i, row) in rows.indexed) ...[
+          if (i > 0) const SizedBox(height: 10),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (j, type) in row.indexed) ...[
+                  if (j > 0) const SizedBox(width: 10),
+                  Expanded(
+                    child: _TypeTile(
+                      type: type,
+                      shortcut: keyOf(type),
+                      onTap: () => onPick(type),
+                    ),
+                  ),
+                ],
+                if (row.length == 1) ...[
+                  const SizedBox(width: 10),
+                  const Expanded(child: SizedBox()),
+                ],
               ],
-          ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _TypeTile extends StatelessWidget {
+  const _TypeTile({required this.type, required this.onTap, this.shortcut});
+
+  final RecordType type;
+  final VoidCallback onTap;
+  final String? shortcut;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final p = context.palette;
+    final l = context.l10n;
+    return Material(
+      color: p.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: p.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RecordTypeIcon(type: type, size: 38),
+                  const Spacer(),
+                  if (shortcut != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: p.border),
+                      ),
+                      child: Text(
+                        shortcut!,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: p.textSubtle,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(type.label(l), style: theme.textTheme.titleSmall),
+              const SizedBox(height: 2),
+              Text(
+                type.hint(l),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(color: p.textMuted),
+              ),
+            ],
+          ),
         ),
       ),
     );

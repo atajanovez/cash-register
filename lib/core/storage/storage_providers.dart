@@ -19,4 +19,6 @@ abstract final class PrefKeys {
   static const lastCompany = 'last_company_name';
   static const lastUsername = 'last_username';
   static const themeMode = 'theme_mode';
+  static const apiUrl = 'api_url';
+  static const syncUrl = 'sync_url';
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
@@ -11,23 +12,59 @@ final recordsRepositoryProvider = Provider<RecordsRepository>(
   (ref) => RecordsRepository(ref.watch(offlineProvider.future)),
 );
 
+/// A record with the register it belongs to, for lists that span registers.
+typedef RegisterRecord = ({CashRegister register, CashRecord record});
+
+/// Column the record list is ordered by.
+enum RecordSort { time, amount }
+
 class RecordQuery {
-  const RecordQuery({this.search = '', this.type, this.onlyUnsettled = false});
+  const RecordQuery({
+    this.search = '',
+    this.type,
+    this.onlyUnsettled = false,
+    this.period,
+    this.memberId,
+    this.sort = RecordSort.time,
+    this.ascending = false,
+  });
 
   final String search;
   final RecordType? type;
   final bool onlyUnsettled;
 
-  bool get isDefault => search.isEmpty && type == null && !onlyUnsettled;
+  /// Whole days, both ends included (`end` is the last day).
+  final DateTimeRange? period;
+
+  /// Only records this member made.
+  final String? memberId;
+  final RecordSort sort;
+  final bool ascending;
+
+  /// No filter narrows the list (the order may still differ).
+  bool get isDefault =>
+      search.isEmpty &&
+      type == null &&
+      !onlyUnsettled &&
+      period == null &&
+      memberId == null;
 
   RecordQuery copyWith({
     String? search,
     RecordType? Function()? type,
     bool? onlyUnsettled,
+    DateTimeRange? Function()? period,
+    String? Function()? memberId,
+    RecordSort? sort,
+    bool? ascending,
   }) => RecordQuery(
     search: search ?? this.search,
     type: type != null ? type() : this.type,
     onlyUnsettled: onlyUnsettled ?? this.onlyUnsettled,
+    period: period != null ? period() : this.period,
+    memberId: memberId != null ? memberId() : this.memberId,
+    sort: sort ?? this.sort,
+    ascending: ascending ?? this.ascending,
   );
 
   @override
@@ -35,10 +72,49 @@ class RecordQuery {
       other is RecordQuery &&
       other.search == search &&
       other.type == type &&
-      other.onlyUnsettled == onlyUnsettled;
+      other.onlyUnsettled == onlyUnsettled &&
+      other.period == period &&
+      other.memberId == memberId &&
+      other.sort == sort &&
+      other.ascending == ascending;
 
   @override
-  int get hashCode => Object.hash(search, type, onlyUnsettled);
+  int get hashCode => Object.hash(
+    search,
+    type,
+    onlyUnsettled,
+    period,
+    memberId,
+    sort,
+    ascending,
+  );
+}
+
+/// Count and cash effect of every record a query matches (not just the
+/// loaded page).
+class RecordTotals {
+  const RecordTotals({this.count = 0, this.moneyIn = 0, this.moneyOut = 0});
+
+  final int count;
+
+  /// Cash that came into the register (positive).
+  final int moneyIn;
+
+  /// Cash that left it (positive).
+  final int moneyOut;
+
+  int get net => moneyIn - moneyOut;
+
+  factory RecordTotals.of(Iterable<CashRecord> records) {
+    var count = 0, moneyIn = 0, moneyOut = 0;
+    for (final r in records) {
+      count++;
+      final cash = r.type.currentSign * r.amount;
+      if (cash > 0) moneyIn += cash;
+      if (cash < 0) moneyOut -= cash;
+    }
+    return RecordTotals(count: count, moneyIn: moneyIn, moneyOut: moneyOut);
+  }
 }
 
 /// What the "add record" form submits.
@@ -88,7 +164,7 @@ class RecordsRepository {
         statusCode: 401,
       ));
 
-  /// Newest first. A page shorter than [limit] means there is nothing more.
+  /// In the query's order. A page shorter than [limit] means there is nothing more.
   Future<List<CashRecord>> list(
     String registerId,
     RecordQuery query, {
@@ -102,6 +178,22 @@ class RecordsRepository {
     );
     return all.skip(offset).take(limit).toList();
   }
+
+  Future<RecordTotals> totals(String registerId, RecordQuery query) async {
+    final local = await _local;
+    return RecordTotals.of(
+      local.store.view.records(local.store.resolve(registerId), query),
+    );
+  }
+
+  /// Obligations with something left and a due date, in every visible
+  /// register, earliest due first.
+  Future<List<RegisterRecord>> openObligations() async =>
+      (await _local).store.view.openObligations();
+
+  /// The newest records across every visible register.
+  Future<List<RegisterRecord>> recent({int limit = 8}) async =>
+      (await _local).store.view.recentRecords(limit);
 
   Future<CashRecord> create(String registerId, RecordDraft draft) async {
     final local = await _local;

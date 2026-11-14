@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -I -)",
+      "Bash(cp swagger.json /Users/macbookpro/Projects/portfolio/cash_register/docs/swagger.json)",
+      "Bash(open /Users/macbookpro/Projects/portfolio/cash_register/docs/swagger.html)",
+      "Bash(grep -v \"^\\\\s*$\")",
+      "Bash(python3 -c \"import json;d=json.load\\(open\\('docs/swagger.json'\\)\\);[print\\(p,list\\(v\\)\\) for p,v in d['paths'].items\\(\\)]\")",
+      "Bash(sort -u -t: -k3)",
+      "Bash(security find-identity *)",
+      "Bash(sw_vers -productVersion)",
+      "Bash(codesign -dv --verbose=2 \"build/macos/Build/Products/Release/Cash Register.app\")",
+      "Bash(lipo -archs \"build/macos/Build/Products/Release/Cash Register.app/Contents/MacOS/Cash Register\")"
+    ]
+  }
+}

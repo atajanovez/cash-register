@@ -121,3 +121,55 @@ class RecordsController extends AsyncNotifier<RecordsPage> {
     }
   }
 }
+
+/// Count and cash in/out of every record the register's filters match.
+final recordTotalsProvider = FutureProvider.autoDispose
+    .family<RecordTotals, String>((ref, registerId) {
+      ref.watch(dataRevisionProvider);
+      return ref
+          .watch(recordsRepositoryProvider)
+          .totals(registerId, ref.watch(recordQueryProvider(registerId)));
+    });
+
+/// Unsettled obligations with a due date, across registers, split into
+/// overdue and due within [DueObligations.soonDays] days.
+final dueObligationsProvider = FutureProvider.autoDispose<DueObligations>((
+  ref,
+) async {
+  ref.watch(dataRevisionProvider);
+  final all = await ref.watch(recordsRepositoryProvider).openObligations();
+  return DueObligations.of(all, DateTime.now());
+});
+
+class DueObligations {
+  const DueObligations({this.overdue = const [], this.soon = const []});
+
+  static const soonDays = 7;
+
+  final List<RegisterRecord> overdue;
+  final List<RegisterRecord> soon;
+
+  bool get isEmpty => overdue.isEmpty && soon.isEmpty;
+
+  factory DueObligations.of(List<RegisterRecord> all, DateTime now) {
+    final limit = now.add(const Duration(days: soonDays));
+    return DueObligations(
+      overdue: [
+        for (final e in all)
+          if (e.record.isOverdue(now)) e,
+      ],
+      soon: [
+        for (final e in all)
+          if (!e.record.isOverdue(now) && e.record.deadline!.isBefore(limit)) e,
+      ],
+    );
+  }
+}
+
+/// The newest records across registers, for the desktop overview.
+final recentRecordsProvider = FutureProvider.autoDispose<List<RegisterRecord>>((
+  ref,
+) {
+  ref.watch(dataRevisionProvider);
+  return ref.watch(recordsRepositoryProvider).recent();
+});

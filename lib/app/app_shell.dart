@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/theme/theme_mode_provider.dart';
 import '../core/widgets/app_logo.dart';
+import '../core/offline/offline_providers.dart';
 import '../core/widgets/common.dart';
+import '../core/widgets/shortcuts.dart';
+import '../features/account/account_page.dart';
 import '../features/auth/application/auth_controller.dart';
+import '../features/settings/server_widgets.dart';
 import '../features/sync/sync_widgets.dart';
 import '../l10n/l10n.dart';
 
@@ -66,18 +72,31 @@ class AppShell extends ConsumerWidget {
     }
 
     final full = MediaQuery.sizeOf(context).width >= _fullSidebarWidth;
-    return Scaffold(
-      body: Row(
-        children: [
-          _Sidebar(
-            full: full,
-            destinations: destinations,
-            selected: shell.currentIndex,
-            onSelect: _go,
-          ),
-          VerticalDivider(width: 1, color: p.border),
-          Expanded(child: _content),
-        ],
+    final digits = [
+      LogicalKeyboardKey.digit1,
+      LogicalKeyboardKey.digit2,
+      LogicalKeyboardKey.digit3,
+    ];
+    return KeyboardShortcuts(
+      bindings: {
+        for (var i = 0; i < destinations.length; i++)
+          cmd(digits[i]): () => _go(i),
+        cmd(LogicalKeyboardKey.keyR): () =>
+            ref.read(syncControllerProvider).refresh(),
+      },
+      child: Scaffold(
+        body: Row(
+          children: [
+            _Sidebar(
+              full: full,
+              destinations: destinations,
+              selected: shell.currentIndex,
+              onSelect: _go,
+            ),
+            VerticalDivider(width: 1, color: p.border),
+            Expanded(child: _content),
+          ],
+        ),
       ),
     );
   }
@@ -169,15 +188,18 @@ class _Sidebar extends ConsumerWidget {
                   full ? 12 : 0,
                   16,
                 ),
-                child: _UserCard(
-                  full: full,
-                  name: session.fullName,
-                  role: session.isManager
-                      ? context.l10n.roleManager
-                      : context.l10n.roleMember,
-                  initials: _initials(session.fullName),
+                child: _UserMenu(
                   // The account page is the last destination.
-                  onTap: () => onSelect(destinations.length - 1),
+                  onProfile: () => onSelect(destinations.length - 1),
+                  builder: (open) => _UserCard(
+                    full: full,
+                    name: session.fullName,
+                    role: session.isManager
+                        ? context.l10n.roleManager
+                        : context.l10n.roleMember,
+                    initials: _initials(session.fullName),
+                    onTap: open,
+                  ),
                 ),
               ),
           ],
@@ -260,6 +282,67 @@ class _NavItem extends StatelessWidget {
     return full
         ? semantic
         : Tooltip(message: destination.label, child: semantic);
+  }
+}
+
+/// Profile, theme, server and log out, opened from the user card.
+class _UserMenu extends ConsumerWidget {
+  const _UserMenu({required this.onProfile, required this.builder});
+
+  final VoidCallback onProfile;
+  final Widget Function(VoidCallback open) builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final p = context.palette;
+    final mode = ref.watch(themeModeProvider);
+    Widget check(bool on) => Icon(
+      LucideIcons.check,
+      size: 16,
+      color: on ? p.brand : Colors.transparent,
+    );
+    return MenuAnchor(
+      // Opens upwards, above the card.
+      alignmentOffset: const Offset(0, -8),
+      menuChildren: [
+        MenuItemButton(
+          leadingIcon: const Icon(LucideIcons.circleUser, size: 18),
+          onPressed: onProfile,
+          child: Text(l.navAccount),
+        ),
+        SubmenuButton(
+          leadingIcon: const Icon(LucideIcons.sunMoon, size: 18),
+          menuChildren: [
+            for (final (m, label) in [
+              (ThemeMode.system, l.themeSystem),
+              (ThemeMode.light, l.themeLight),
+              (ThemeMode.dark, l.themeDark),
+            ])
+              MenuItemButton(
+                leadingIcon: check(mode == m),
+                onPressed: () => ref.read(themeModeProvider.notifier).set(m),
+                child: Text(label),
+              ),
+          ],
+          child: Text(l.theme),
+        ),
+        MenuItemButton(
+          leadingIcon: const Icon(LucideIcons.server, size: 18),
+          onPressed: () => showServerSettings(context),
+          child: Text(l.serverTitle),
+        ),
+        const Divider(),
+        MenuItemButton(
+          leadingIcon: Icon(LucideIcons.logOut, size: 18, color: p.negative),
+          onPressed: () => logOutWithConfirm(context, ref),
+          child: Text(l.logOut, style: TextStyle(color: p.negative)),
+        ),
+      ],
+      builder: (context, controller, _) => builder(
+        () => controller.isOpen ? controller.close() : controller.open(),
+      ),
+    );
   }
 }
 

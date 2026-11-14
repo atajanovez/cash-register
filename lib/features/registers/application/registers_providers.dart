@@ -4,6 +4,7 @@ import '../../../core/offline/offline_providers.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../records/application/records_controller.dart';
 import '../data/registers_repository.dart';
+import '../../records/domain/record_type.dart';
 import '../domain/cash_register.dart';
 import '../domain/register_query.dart';
 
@@ -75,6 +76,31 @@ final registerPermissionsProvider = Provider.autoDispose
         status: detail.register.status,
       );
     });
+
+/// Registers the signed-in member can add a record to right now, for adding
+/// a record straight from the list.
+final addableRegistersProvider = FutureProvider.autoDispose<List<CashRegister>>(
+  (ref) async {
+    final session = ref.watch(authControllerProvider).value;
+    if (session == null) return const [];
+    final registers = await ref.watch(allRegistersProvider.future);
+    final out = <CashRegister>[];
+    for (final r in registers) {
+      if (!RecordType.values.any((t) => t.creatable && t.allowedIn(r.status))) {
+        continue;
+      }
+      if (session.isManager) {
+        out.add(r);
+        continue;
+      }
+      final detail = await ref.watch(registerDetailProvider(r.id).future);
+      if (detail.accessOf(session.memberId) == RegisterAccess.modify) {
+        out.add(r);
+      }
+    }
+    return out;
+  },
+);
 
 /// Register mutations that also refresh every view showing the result.
 final registerActionsProvider = Provider<RegisterActions>(RegisterActions.new);

@@ -251,6 +251,7 @@ class Avatar extends StatelessWidget {
 Future<T?> showAdaptiveSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
+  double maxWidth = 500,
 }) {
   if (isWide(context)) {
     return showDialog<T>(
@@ -259,7 +260,7 @@ Future<T?> showAdaptiveSheet<T>(
         clipBehavior: Clip.antiAlias,
         insetPadding: const EdgeInsets.all(32),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500, maxHeight: 720),
+          constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: 720),
           child: builder(context),
         ),
       ),
@@ -593,18 +594,25 @@ class AppBarPrimaryAction extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onPressed,
+    this.tooltip,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onPressed;
 
+  /// E.g. the keyboard shortcut.
+  final String? tooltip;
+
   @override
-  Widget build(BuildContext context) => FilledButton.icon(
-    onPressed: onPressed,
-    icon: Icon(icon, size: 18),
-    label: Text(label),
-  );
+  Widget build(BuildContext context) {
+    final button = FilledButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+    );
+    return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
+  }
 }
 
 /// Square outlined icon button with a tooltip, for toolbars.
@@ -614,11 +622,15 @@ class ToolbarIconButton extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.onPressed,
+    this.active = false,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback? onPressed;
+
+  /// Tinted, for a filter that is on.
+  final bool active;
 
   @override
   Widget build(BuildContext context) {
@@ -635,7 +647,11 @@ class ToolbarIconButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             padding: EdgeInsets.zero,
             minimumSize: Size.zero,
-            foregroundColor: p.textMuted,
+            foregroundColor: active ? p.brand : p.textMuted,
+            backgroundColor: active ? p.brandSoft : null,
+            side: active
+                ? BorderSide(color: p.brand.withValues(alpha: .4))
+                : null,
           ),
           onPressed: onPressed,
           child: Icon(icon, size: 18),

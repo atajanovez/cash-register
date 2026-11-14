@@ -227,3 +227,52 @@ operations, requests copied from this document, and a pull from a brand-new empt
   - **Fallback:** while `/v1/sync` answers 5xx/404/405, it replays each operation through its REST call, records the server ids in the id map, and re-downloads everything. It tries the endpoint again after 10 minutes.
 - **Online only:** member create/update (they carry passwords) and pinning.
 
+
+## Servers: API URL and sync URL (2026-10-31)
+
+The backend now has a local server (in the office) that replicates with the
+cloud. Per the backend developer:
+
+- **API URL** — every request (login, signup, members, registers, records,
+  and the app's own offline outbox) goes here. Default: `AppConfig.baseUrl`.
+- **Sync URL** — only the "Serwerleri sinhronla" button uses it:
+  `POST {syncUrl}/v1/server-sync`. The local server pushes its changes to the
+  cloud and pulls the cloud's back. The app first sends its waiting changes,
+  then calls server-sync, then re-downloads everything.
+
+Both are set per device (login screen "Serwer: …" link, or Profile → Serwer)
+and stored in SharedPreferences (`api_url`, `sync_url`). People can type
+`192.168.1.158:8083`; the app adds `http://` and `/api`. The dio interceptor
+reads the API URL on every request, so a change applies immediately.
+
+Creates sent through REST now carry the client's own `id`
+(`RecordCreate.id`, `RegisterCreate.id`), so a retry after a lost reply does
+not duplicate.
+
+### Backend answers (2026-11-01)
+
+- **server-sync**: call it on the local server, no body, Bearer token from a
+  login **on that server**. 200 `{"status":"synced","companies":N}`; failures
+  409 `conflict`, 401 bad token, 403 non-manager (manager only). Returns when
+  done; server write timeout 3 min. No automatic timer.
+- **Tokens** are not portable between servers. The app logs in to the sync
+  server separately (password dialog on first sync; token kept in secure
+  storage as `sync_server_token`, keyed by sync URL and member). When the
+  sync URL equals the API URL the main token is used. Requests to the sync
+  server never carry the main token, and its 401s do not end the session.
+- **Changing the API URL** while signed in logs out and wipes local data
+  (confirm dialog warns about unsent changes). Ids (UUIDs) are the same on
+  both servers, but data may be newer on one.
+- **Duplicate client id**: 409 `duplicate_value`, not the existing object.
+  The engine treats it as "already sent" for `*.create` operations (register
+  name clashes use `cash_register_name_taken`, so the code only means id).
+- **Ownership**: each company has one write-owning server; writes on the
+  other get 409 `conflict` or `wrong_server`. No merge, no last-write-wins.
+- `/v1/sync` is removed in current code; REST per change is the intended
+  design. The engine still tries `/v1/sync` first and falls back on 404/5xx.
+- No `updated_since`, no tombstones: full re-download stays.
+- Transfer (`/companies/{id}/transfer`) is an operator action, not routine.
+  `/replication/*` are server-to-server only.
+- Local server is plain HTTP; Android manifest allows cleartext traffic.
+- Deleting a closed register still doesn't subtract its `transfer_in` from
+  destination balances (server bug).

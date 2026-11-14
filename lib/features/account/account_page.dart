@@ -10,28 +10,32 @@ import '../../core/widgets/common.dart';
 import '../../l10n/l10n.dart';
 import '../auth/application/auth_controller.dart';
 import '../members/domain/member.dart';
+import '../settings/server_widgets.dart';
+
+/// Asks first (warning about unsent changes), then wipes this member's
+/// local data and logs out.
+Future<void> logOutWithConfirm(BuildContext context, WidgetRef ref) async {
+  final sync = ref.read(syncControllerProvider);
+  final auth = ref.read(authControllerProvider.notifier);
+  final unsent = sync.unsentCount;
+  final ok = await confirm(
+    context,
+    title: context.l10n.logOutTitle,
+    message: unsent > 0
+        ? context.l10n.logOutUnsent('$unsent')
+        : context.l10n.logOutMessage,
+    confirmLabel: context.l10n.logOut,
+    destructive: true,
+  );
+  if (!ok) return;
+  // Local data stays on a shared device otherwise.
+  await sync.wipe();
+  await auth.logout();
+}
 
 /// Settings-style page: profile, company, appearance, log out.
 class AccountPage extends ConsumerWidget {
   const AccountPage({super.key});
-
-  Future<void> _logout(BuildContext context, WidgetRef ref) async {
-    final sync = ref.read(syncControllerProvider);
-    final unsent = sync.unsentCount;
-    final ok = await confirm(
-      context,
-      title: context.l10n.logOutTitle,
-      message: unsent > 0
-          ? context.l10n.logOutUnsent('$unsent')
-          : context.l10n.logOutMessage,
-      confirmLabel: context.l10n.logOut,
-      destructive: true,
-    );
-    if (!ok) return;
-    // Local data stays on a shared device otherwise.
-    await sync.wipe();
-    await ref.read(authControllerProvider.notifier).logout();
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -121,6 +125,8 @@ class AccountPage extends ConsumerWidget {
                     ],
                   ),
                 ),
+                _Section(l.serverTitle),
+                const ServerCard(),
                 _Section(l.theme),
                 const _ThemePicker(),
                 const SizedBox(height: 28),
@@ -132,7 +138,7 @@ class AccountPage extends ConsumerWidget {
                       side: BorderSide(color: p.negative.withValues(alpha: .4)),
                       minimumSize: wide ? null : const Size.fromHeight(48),
                     ),
-                    onPressed: () => _logout(context, ref),
+                    onPressed: () => logOutWithConfirm(context, ref),
                     icon: const Icon(LucideIcons.logOut, size: 18),
                     label: Text(l.logOut),
                   ),

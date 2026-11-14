@@ -5,6 +5,7 @@ import '../../../../core/format/money.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../l10n/l10n.dart';
+import '../../../settings/server_widgets.dart';
 
 /// Shared frame for login and signup.
 ///
@@ -93,9 +94,15 @@ class _FormColumn extends StatelessWidget {
                   children: [
                     const AppLogo(size: 40),
                     const SizedBox(width: 12),
-                    Text(
-                      context.l10n.appName,
-                      style: theme.textTheme.titleLarge,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.appName,
+                          style: theme.textTheme.titleLarge,
+                        ),
+                        const AdylHasapWordmark(size: 13),
+                      ],
                     ),
                   ],
                 ),
@@ -109,6 +116,8 @@ class _FormColumn extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               child,
+              const SizedBox(height: 16),
+              const ServerLink(),
             ],
           ),
         ),
@@ -161,39 +170,47 @@ class _BrandPanel extends StatelessWidget {
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Padding(
                     padding: const EdgeInsets.all(44),
+                    // Wordmark at the top, the pitch at the bottom.
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (roomy) ...[
-                          const _SampleCard(),
-                          const SizedBox(height: 40),
-                        ],
-                        Text(
-                          context.l10n.brandHeadline,
-                          style: theme.textTheme.headlineLarge?.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          context.l10n.brandBody,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: muted,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        _Feature(
-                          icon: LucideIcons.monitorSmartphone,
-                          text: context.l10n.featureDevices,
-                        ),
-                        _Feature(
-                          icon: LucideIcons.shieldCheck,
-                          text: context.l10n.featureRoles,
-                        ),
-                        _Feature(
-                          icon: LucideIcons.receiptText,
-                          text: context.l10n.featureAudit,
+                        const AdylHasapWordmark(size: 20, onBrand: true),
+                        const SizedBox(height: 32),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (roomy) ...[
+                              const _SampleCard(),
+                              const SizedBox(height: 40),
+                            ],
+                            Text(
+                              context.l10n.brandHeadline,
+                              style: theme.textTheme.headlineLarge?.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              context.l10n.brandBody,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: muted,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                            _Feature(
+                              icon: LucideIcons.monitorSmartphone,
+                              text: context.l10n.featureDevices,
+                            ),
+                            _Feature(
+                              icon: LucideIcons.shieldCheck,
+                              text: context.l10n.featureRoles,
+                            ),
+                            _Feature(
+                              icon: LucideIcons.receiptText,
+                              text: context.l10n.featureAudit,
+                            ),
+                          ],
                         ),
                       ],
                     ),

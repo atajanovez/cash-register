@@ -12,6 +12,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/common.dart';
 import '../../l10n/l10n.dart';
 import '../records/domain/record_type.dart';
+import '../settings/server_widgets.dart';
 
 /// Icon, colour and one-line label for the current sync state.
 ({IconData icon, Color color, String label}) _describe(
@@ -272,6 +273,10 @@ class _SyncSheet extends ConsumerWidget {
               icon: const Icon(LucideIcons.refreshCw, size: 18),
               label: Text(l.syncNow),
             ),
+            if (showSyncServers(ref)) ...[
+              const SizedBox(height: 10),
+              const SyncServersButton(expanded: true),
+            ],
           ],
         ),
       ),

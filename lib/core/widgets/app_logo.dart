@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../../l10n/l10n.dart';
 import '../theme/app_theme.dart';
 
-/// The Kassa mark: a white receipt on a blue tile. Drawn as vector so it is
-/// crisp at every size; the launcher icons are rendered from the same painter.
+/// The Kassa mark: a white receipt on an Adyl Hasap teal tile. Drawn as
+/// vector so it is crisp at every size; the launcher icons are rendered from
+/// the same painter.
 class AppLogo extends StatelessWidget {
   const AppLogo({super.key, this.size = 72, this.tile = true});
 
@@ -122,4 +123,41 @@ class LogoPainter extends CustomPainter {
       old.receiptScale != receiptScale ||
       old.start != start ||
       old.end != end;
+}
+
+/// "Adyl Hasap", the family of apps Kassa belongs to, lettered like its logo:
+/// bold Inter with "Hasap" in the brand teal.
+class AdylHasapWordmark extends StatelessWidget {
+  const AdylHasapWordmark({super.key, this.size = 15, this.onBrand = false});
+
+  final double size;
+
+  /// White lettering for the brand panel.
+  final bool onBrand;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Text.rich(
+      TextSpan(
+        text: 'Adyl ',
+        children: [
+          TextSpan(
+            text: 'Hasap',
+            style: TextStyle(
+              color: onBrand ? Colors.white.withValues(alpha: .75) : p.brand,
+            ),
+          ),
+        ],
+      ),
+      style: TextStyle(
+        fontFamily: AppTheme.fontFamily,
+        fontWeight: FontWeight.w700,
+        fontSize: size,
+        height: 1.2,
+        letterSpacing: -.2,
+        color: onBrand ? Colors.white : p.text,
+      ),
+    );
+  }
 }

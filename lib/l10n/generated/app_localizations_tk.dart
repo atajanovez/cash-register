@@ -1063,4 +1063,164 @@ class AppLocalizationsTk extends AppLocalizations {
 
   @override
   String get needsInternet => 'Munuň üçin internet gerek.';
+
+  @override
+  String get serverTitle => 'Serwer';
+
+  @override
+  String get serverSubtitle => 'Programmanyň haýsy serwere ýüz tutýandygy.';
+
+  @override
+  String get serverApiUrl => 'Esasy serwer';
+
+  @override
+  String get serverApiUrlHelp =>
+      'Giriş, kassalar, ýazgylar we agzalar şu salga gidýär.';
+
+  @override
+  String get serverSyncUrl => 'Sinhronlamak üçin serwer';
+
+  @override
+  String get serverSyncUrlHelp =>
+      'Diňe «Serwerleri sinhronla» düwmesi şu salga ýüz tutýar. Boş goýsaňyz, düwme görünmeýär.';
+
+  @override
+  String get serverUrlHint => 'Mysal: http://192.168.1.158:8083';
+
+  @override
+  String get serverInvalidUrl =>
+      'Dogry salga ýazyň, mysal: http://192.168.1.158:8083';
+
+  @override
+  String get serverUseDefault => 'Adaty serweri ulan';
+
+  @override
+  String get serverSaved => 'Serwer sazlamalary ýatda saklandy';
+
+  @override
+  String get serverNotSet => 'Goýulmady';
+
+  @override
+  String get serverEdit => 'Üýtget';
+
+  @override
+  String get serverSave => 'Ýatda sakla';
+
+  @override
+  String get serverSyncNow => 'Serwerleri sinhronla';
+
+  @override
+  String get serverSyncRunning => 'Serwerler sinhronlanýar…';
+
+  @override
+  String get serverSyncDone => 'Serwerler sinhronlandy';
+
+  @override
+  String get serverSyncHint =>
+      'Ýerli serwer bulut serweri bilen maglumat çalşýar, soňra täze maglumatlar şu ýere ýüklenýär.';
+
+  @override
+  String get errWrongServer =>
+      'Bu kompaniýanyň maglumatlary başga serwerde üýtgedilýär. Şol serwere birikiň.';
+
+  @override
+  String get syncLoginTitle => 'Sinhron serwerine giriş';
+
+  @override
+  String syncLoginMessage(String server, String username) {
+    return '$server serweriniň öz girişi bar. @$username üçin açar sözüni giriziň.';
+  }
+
+  @override
+  String get syncLoginButton => 'Gir we sinhronla';
+
+  @override
+  String get serverChangeTitle => 'Serwer üýtgeýär';
+
+  @override
+  String get serverChangeMessage =>
+      'Täze serwere geçmek üçin hasapdan çykyp, gaýtadan girmeli. Bu enjamdaky maglumatlar täzeden ýüklener.';
+
+  @override
+  String serverChangeUnsent(String count) {
+    return 'Ugradylmadyk $count üýtgeşme bar. Serweri häzir üýtgetseňiz, olar ýiter.';
+  }
+
+  @override
+  String get serverChangeConfirm => 'Çyk we üýtget';
+
+  @override
+  String get periodAll => 'Ähli wagt';
+
+  @override
+  String get periodToday => 'Şu gün';
+
+  @override
+  String get periodWeek => 'Şu hepde';
+
+  @override
+  String get periodMonth => 'Şu aý';
+
+  @override
+  String get periodCustom => 'Senäni saýla…';
+
+  @override
+  String get allMembers => 'Ähli agzalar';
+
+  @override
+  String totalsIn(String amount) {
+    return 'Girdi $amount';
+  }
+
+  @override
+  String totalsOut(String amount) {
+    return 'Çykdy $amount';
+  }
+
+  @override
+  String get overviewTitle => 'Umumy syn';
+
+  @override
+  String get overviewHint => 'Jikme-jiklikler üçin çepden kassa saýlaň.';
+
+  @override
+  String get dueTitle => 'Möhletli bergiler';
+
+  @override
+  String dueEmpty(String days) {
+    return 'Ýakyn $days günde möhleti ýetýän bergi ýok.';
+  }
+
+  @override
+  String overdueCount(String count) {
+    return '$count möhleti geçdi';
+  }
+
+  @override
+  String dueSoonCount(String count) {
+    return '$count ýakynda';
+  }
+
+  @override
+  String get recentTitle => 'Soňky ýazgylar';
+
+  @override
+  String get recentEmpty => 'Entek hiç bir kassada ýazgy ýok.';
+
+  @override
+  String get copyAmount => 'Mukdary göçür';
+
+  @override
+  String get amountCopied => 'Mukdar göçürildi';
+
+  @override
+  String get statusFilter => 'Ýagdaýy boýunça süz';
+
+  @override
+  String sortBy(String column) {
+    return '$column boýunça tertiple';
+  }
+
+  @override
+  String get pickRegister => 'Haýsy kassa ýazgy goşmaly?';
 }

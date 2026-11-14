@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -10,13 +12,16 @@ import '../../../core/format/money.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/common.dart';
+import '../../../core/widgets/shortcuts.dart';
 import '../../../core/offline/offline_providers.dart';
 import '../../../l10n/l10n.dart';
 import '../../records/application/records_controller.dart';
+import '../../records/data/records_repository.dart';
 import '../../records/domain/cash_record.dart';
 import '../../records/domain/record_type.dart';
 import '../../records/presentation/add_record_sheet.dart';
 import '../../records/presentation/record_details_sheet.dart';
+import '../../records/presentation/record_filters.dart';
 import '../../records/presentation/record_tile.dart';
 import '../application/registers_providers.dart';
 import '../domain/cash_register.dart';
@@ -72,69 +77,113 @@ class RegisterDetailPage extends ConsumerWidget {
           );
 
     if (wide) {
-      return Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (register != null)
-              LayoutBuilder(
-                builder: (context, constraints) => PageHeader(
-                  leading: embedded ? null : const BackButton(),
-                  title: register.name,
-                  badge: StatusPill(register.status),
-                  subtitle: context.l10n.createdOn(
-                    Dates.date(register.createdAt),
+      return KeyboardShortcuts(
+        bindings: {
+          if (canAdd)
+            cmd(LogicalKeyboardKey.keyN): () =>
+                showAddRecord(context, register),
+        },
+        child: Scaffold(
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (register != null)
+                LayoutBuilder(
+                  builder: (context, constraints) => PageHeader(
+                    leading: embedded ? null : const BackButton(),
+                    title: register.name,
+                    badge: StatusPill(register.status),
+                    subtitle: context.l10n.createdOn(
+                      Dates.date(register.createdAt),
+                    ),
+                    actions: [
+                      if (perms != null && commands != null)
+                        ..._desktopActions(
+                          context,
+                          perms,
+                          commands,
+                          // Narrow panes keep only the main buttons visible.
+                          compact: constraints.maxWidth < 980,
+                        ),
+                      if (canAdd)
+                        AppBarPrimaryAction(
+                          icon: LucideIcons.plus,
+                          label: context.l10n.addRecord,
+                          tooltip: shortcutLabel('N'),
+                          onPressed: () => showAddRecord(context, register),
+                        ),
+                    ],
                   ),
-                  actions: [
-                    if (perms != null && commands != null)
-                      ..._desktopActions(
-                        context,
-                        perms,
-                        commands,
-                        // Narrow panes keep only the main buttons visible.
-                        compact: constraints.maxWidth < 980,
-                      ),
-                    if (canAdd)
-                      AppBarPrimaryAction(
-                        icon: LucideIcons.plus,
-                        label: context.l10n.addRecord,
-                        onPressed: () => _addRecord(context, register),
-                      ),
-                  ],
                 ),
-              ),
-            Expanded(child: body),
-          ],
+              Expanded(child: body),
+            ],
+          ),
         ),
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: !embedded,
-        title: Text(register?.name ?? ''),
-        actions: [
-          if ((perms?.isManager ?? false) && commands != null)
-            IconButton(
-              tooltip: context.l10n.more,
-              icon: const Icon(LucideIcons.ellipsisVertical),
-              onPressed: () => showActionMenu(
-                context,
-                title: register!.name,
-                actions: commands.overflow(perms!, includeLifecycle: true),
+    return _PhoneChrome(
+      builder: (collapsed, fabExtended) => Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: !embedded,
+          // Once the balance card scrolls away, the cash stays in view here.
+          title: register == null
+              ? null
+              : ValueListenableBuilder(
+                  valueListenable: collapsed,
+                  builder: (context, on, _) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(register.name),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 180),
+                        alignment: Alignment.topLeft,
+                        child: on
+                            ? Text(
+                                Money.format(register.currentAmount),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      fontFeatures: tabularFigures,
+                                    ),
+                              )
+                            : const SizedBox(width: double.infinity),
+                      ),
+                    ],
+                  ),
+                ),
+          actions: [
+            if ((perms?.isManager ?? false) && commands != null)
+              IconButton(
+                tooltip: context.l10n.more,
+                icon: const Icon(LucideIcons.ellipsisVertical),
+                onPressed: () => showActionMenu(
+                  context,
+                  title: register!.name,
+                  actions: commands.overflow(perms!, includeLifecycle: true),
+                ),
               ),
-            ),
-          const SizedBox(width: 4),
-        ],
+            const SizedBox(width: 4),
+          ],
+        ),
+        // Shrinks to an icon while scrolling down, so it does not cover the
+        // amounts.
+        floatingActionButton: canAdd
+            ? ValueListenableBuilder(
+                valueListenable: fabExtended,
+                builder: (context, extended, _) =>
+                    FloatingActionButton.extended(
+                      isExtended: extended,
+                      tooltip: context.l10n.addRecord,
+                      onPressed: () => showAddRecord(context, register),
+                      icon: const Icon(LucideIcons.plus),
+                      label: Text(context.l10n.addRecord),
+                    ),
+              )
+            : null,
+        body: body,
       ),
-      floatingActionButton: canAdd
-          ? FloatingActionButton.extended(
-              onPressed: () => _addRecord(context, register),
-              icon: const Icon(LucideIcons.plus),
-              label: Text(context.l10n.addRecord),
-            )
-          : null,
-      body: body,
     );
   }
 
@@ -148,12 +197,8 @@ class RegisterDetailPage extends ConsumerWidget {
     final register = commands.detail.register;
     final unsettled = register.difference != 0;
     final count = commands.detail.members.length;
+    // Refreshing is ⌘R, or the sync status in the sidebar.
     return [
-      ToolbarIconButton(
-        icon: LucideIcons.refreshCw,
-        tooltip: l.refresh,
-        onPressed: commands.refresh,
-      ),
       if (perms.canManageAccess && !compact)
         OutlinedButton.icon(
           onPressed: commands.editAccess,
@@ -329,7 +374,8 @@ class _Commands {
   }
 }
 
-Future<void> _addRecord(
+/// Opens the add record form for [register]; shows the saved message.
+Future<void> showAddRecord(
   BuildContext context,
   CashRegister register, {
   RecordType? type,
@@ -337,10 +383,12 @@ Future<void> _addRecord(
 }) async {
   final saved = await showAdaptiveSheet<bool>(
     context,
+    maxWidth: 560,
     builder: (_) =>
         AddRecordSheet(register: register, type: type, parent: parent),
   );
   if (saved == true && context.mounted) {
+    if (!isWide(context)) HapticFeedback.lightImpact();
     final offline = ProviderScope.containerOf(
       context,
     ).read(syncStatusProvider).isOffline;
@@ -364,32 +412,98 @@ class _Body extends ConsumerStatefulWidget {
 class _BodyState extends ConsumerState<_Body> {
   String get _id => widget.detail.register.id;
 
+  /// Wide panes show the tapped record in a side panel instead of a dialog.
+  bool _panelRoom = false;
+  CashRecord? _inspected;
+
   bool _onScroll(ScrollNotification n) {
+    // Only the page itself, not the sideways filter row.
+    if (n.depth != 0) return false;
     // Load the next page a little before the end is reached.
     if (n.metrics.extentAfter < 600) {
       ref.read(recordsControllerProvider(_id).notifier).loadMore();
+    }
+    final chrome = _ScrollChrome.maybeOf(context);
+    if (chrome != null) {
+      chrome.collapsed.value = n.metrics.pixels > 190;
+      if (n is UserScrollNotification) {
+        if (n.direction == ScrollDirection.reverse) {
+          chrome.fabExtended.value = false;
+        } else if (n.direction == ScrollDirection.forward) {
+          chrome.fabExtended.value = true;
+        }
+      }
     }
     return false;
   }
 
   Future<void> _refresh() => ref.read(syncControllerProvider).refresh();
 
-  void _openRecord(CashRecord record) async {
-    final register = widget.detail.register;
-    final settleType = record.type.settledBy;
-    final canSettle =
+  /// The settlement type this member may add for [record] now, if any.
+  RecordType? _settleType(CashRecord record) {
+    final type = record.type.settledBy;
+    final ok =
         (widget.perms?.canAddRecords ?? false) &&
-        settleType != null &&
+        type != null &&
         record.remaining > 0 &&
-        settleType.allowedIn(register.status);
+        type.allowedIn(widget.detail.register.status);
+    return ok ? type : null;
+  }
 
+  void _settle(CashRecord record) => showAddRecord(
+    context,
+    widget.detail.register,
+    type: _settleType(record),
+    parent: record,
+  );
+
+  void _openRecord(CashRecord record) async {
+    if (_panelRoom) {
+      setState(() => _inspected = record);
+      return;
+    }
     final settle = await showAdaptiveSheet<bool>(
       context,
-      builder: (_) => RecordDetailsSheet(record: record, canSettle: canSettle),
+      builder: (_) => RecordDetailsSheet(
+        record: record,
+        canSettle: _settleType(record) != null,
+      ),
     );
-    if (settle == true && mounted) {
-      await _addRecord(context, register, type: settleType, parent: record);
-    }
+    if (settle == true && mounted) _settle(record);
+  }
+
+  /// Right-click on a desktop row.
+  void _recordMenu(CashRecord record, Offset at) {
+    final l = context.l10n;
+    final settleType = _settleType(record);
+    showActionMenu(
+      context,
+      at: at,
+      title: record.title(l),
+      actions: [
+        MenuAction(
+          icon: LucideIcons.squareArrowOutUpRight,
+          label: l.open,
+          onSelected: () => _openRecord(record),
+        ),
+        if (settleType != null)
+          MenuAction(
+            icon: settleType.icon,
+            label: settleType.label(l),
+            onSelected: () => _settle(record),
+          ),
+        MenuAction(
+          icon: LucideIcons.copy,
+          label: l.copyAmount,
+          onSelected: () {
+            Clipboard.setData(
+              ClipboardData(text: Money.toInput(record.amount)),
+            );
+            showInfoSnack(context, l.amountCopied);
+          },
+        ),
+      ],
+    );
   }
 
   @override
@@ -399,7 +513,7 @@ class _BodyState extends ConsumerState<_Body> {
     final wide = isWide(context);
     final perms = widget.perms;
 
-    return RefreshIndicator(
+    final list = RefreshIndicator(
       onRefresh: _refresh,
       child: NotificationListener<ScrollNotification>(
         onNotification: _onScroll,
@@ -426,13 +540,27 @@ class _BodyState extends ConsumerState<_Body> {
                     const SizedBox(height: 12),
                     _AccessNote(perms: perms),
                   ],
-                  const SizedBox(height: 24),
+                  SizedBox(height: wide ? 24 : 16),
                   _RecordsToolbar(registerId: _id),
-                  if (wide) const _TableHeader(),
+                  if (wide) ...[
+                    _FilteredTotals(registerId: _id),
+                    _TableHeader(registerId: _id),
+                  ],
                 ],
               ),
               top: wide ? 0 : 8,
             ),
+            if (!wide) ...[
+              // Filters stay at hand while scrolling through records.
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _PinnedBar(
+                  height: 52,
+                  child: _pad(_PhoneFilterBar(registerId: _id)),
+                ),
+              ),
+              _box(_FilteredTotals(registerId: _id), top: 0),
+            ],
             ...switch (records) {
               AsyncValue(:final value?, hasValue: true) => _recordSlivers(
                 value,
@@ -463,6 +591,32 @@ class _BodyState extends ConsumerState<_Body> {
         ),
       ),
     );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _panelRoom = wide && constraints.maxWidth >= 1000;
+        final inspected = _panelRoom ? _inspected : null;
+        if (inspected == null) return list;
+        // The latest copy, so settlements show up in the panel.
+        final current =
+            records.value?.items
+                .where((r) => r.id == inspected.id)
+                .firstOrNull ??
+            inspected;
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: list),
+            _RecordPanel(
+              record: current,
+              canSettle: _settleType(current) != null,
+              onSettle: () => _settle(current),
+              onClose: () => setState(() => _inspected = null),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   List<Widget> _recordSlivers(RecordsPage page, bool wide) {
@@ -492,26 +646,37 @@ class _BodyState extends ConsumerState<_Body> {
       ];
     }
 
-    // One card per day.
+    // One card per day; one card in all when sorted by amount.
+    final byAmount = query.sort == RecordSort.amount;
     final days = <List<CashRecord>>[];
     for (final record in page.items) {
       if (days.isEmpty ||
-          !Dates.sameDay(days.last.first.createdAt, record.createdAt)) {
+          (!byAmount &&
+              !Dates.sameDay(days.last.first.createdAt, record.createdAt))) {
         days.add([record]);
       } else {
         days.last.add(record);
       }
     }
+    // Each day's title sticks to the top while its records scroll by.
+    final headerHeight = 28 + MediaQuery.textScalerOf(context).scale(18);
     return [
-      SliverList.builder(
-        itemCount: days.length,
-        itemBuilder: (context, i) {
-          final day = days[i];
-          return _pad(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                DayHeader(day.first.createdAt, records: day),
+      for (final day in days)
+        SliverMainAxisGroup(
+          slivers: [
+            if (byAmount)
+              const SliverToBoxAdapter(child: SizedBox(height: 12))
+            else
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _PinnedBar(
+                  height: headerHeight,
+                  border: false,
+                  child: _pad(DayHeader(day.first.createdAt, records: day)),
+                ),
+              ),
+            SliverToBoxAdapter(
+              child: _pad(
                 Card(
                   clipBehavior: Clip.antiAlias,
                   child: Column(
@@ -522,6 +687,8 @@ class _BodyState extends ConsumerState<_Body> {
                           RecordRow(
                             record: day[j],
                             onTap: () => _openRecord(day[j]),
+                            onMenu: (at) => _recordMenu(day[j], at),
+                            selected: _panelRoom && day[j].id == _inspected?.id,
                           )
                         else
                           RecordTile(
@@ -532,11 +699,10 @@ class _BodyState extends ConsumerState<_Body> {
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
-          );
-        },
-      ),
+          ],
+        ),
       if (page.hasMore || page.loadMoreError != null)
         SliverToBoxAdapter(
           child: Padding(
@@ -579,6 +745,61 @@ class _BodyState extends ConsumerState<_Body> {
       child: _pad(child),
     ),
   );
+}
+
+/// Desktop side panel with the selected record; Esc or × closes it.
+class _RecordPanel extends StatelessWidget {
+  const _RecordPanel({
+    required this.record,
+    required this.canSettle,
+    required this.onSettle,
+    required this.onClose,
+  });
+
+  final CashRecord record;
+  final bool canSettle;
+  final VoidCallback onSettle;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return KeyboardShortcuts(
+      bindings: {const SingleActivator(LogicalKeyboardKey.escape): onClose},
+      child: Container(
+        width: 380,
+        decoration: BoxDecoration(
+          color: p.surface,
+          border: Border(left: BorderSide(color: p.border)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 8, 0),
+                child: IconButton(
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                  icon: const Icon(LucideIcons.x, size: 18),
+                  onPressed: onClose,
+                ),
+              ),
+            ),
+            Expanded(
+              child: RecordDetailsSheet(
+                key: ValueKey(record.id),
+                record: record,
+                canSettle: canSettle,
+                onSettle: onSettle,
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _StatusBanner extends StatelessWidget {
@@ -717,24 +938,22 @@ class _ActionButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
 
+  /// One line, icon beside the label: these are occasional actions, so
+  /// they take little room above the records.
   @override
-  Widget build(BuildContext context) => OutlinedButton(
+  Widget build(BuildContext context) => OutlinedButton.icon(
     style: OutlinedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      minimumSize: const Size.fromHeight(40),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      visualDensity: VisualDensity.compact,
     ),
     onPressed: onPressed,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 19),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-        ),
-      ],
+    icon: Icon(icon, size: 16),
+    label: Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
     ),
   );
 }
@@ -752,7 +971,11 @@ class _RecordsToolbarState extends ConsumerState<_RecordsToolbar> {
   late final _search = TextEditingController(
     text: ref.read(recordQueryProvider(widget.registerId)).search,
   );
+  final _searchFocus = FocusNode();
   Timer? _debounce;
+
+  /// Phones: the search field shows after tapping the search icon.
+  late bool _searchOpen = _search.text.isNotEmpty;
 
   RecordQueryNotifier get _query =>
       ref.read(recordQueryProvider(widget.registerId).notifier);
@@ -761,6 +984,7 @@ class _RecordsToolbarState extends ConsumerState<_RecordsToolbar> {
   void dispose() {
     _debounce?.cancel();
     _search.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
@@ -784,10 +1008,13 @@ class _RecordsToolbarState extends ConsumerState<_RecordsToolbar> {
 
     final searchField = TextField(
       controller: _search,
+      focusNode: _searchFocus,
       onChanged: _onSearch,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: context.l10n.searchRecords,
+        hintText: wide
+            ? '${context.l10n.searchRecords} (${shortcutLabel('F')})'
+            : context.l10n.searchRecords,
         prefixIcon: const Icon(LucideIcons.search, size: 18),
         isDense: true,
         suffixIcon: _search.text.isEmpty
@@ -800,33 +1027,40 @@ class _RecordsToolbarState extends ConsumerState<_RecordsToolbar> {
                   _debounce?.cancel();
                   _debounce = null;
                   _query.update((q) => q.copyWith(search: ''));
-                  setState(() {});
+                  setState(() => _searchOpen = wide);
                 },
               ),
       ),
     );
-    final filters = [
-      _TypeFilter(
-        selected: query.type,
-        onChanged: (type) => _query.update((q) => q.copyWith(type: () => type)),
-      ),
-      FilterChip(
-        avatar: Icon(
-          LucideIcons.circleDashed,
-          size: 15,
-          color: query.onlyUnsettled ? context.palette.brand : null,
-        ),
-        label: Text(context.l10n.unsettledOnly),
-        selected: query.onlyUnsettled,
-        onSelected: (v) => _query.update((q) => q.copyWith(onlyUnsettled: v)),
-      ),
-    ];
+    final filters = _recordFilters(context, ref, widget.registerId);
 
     final title = Text(
       context.l10n.records,
       style: Theme.of(context).textTheme.titleLarge,
     );
 
+    if (!wide) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(child: title),
+              if (!_searchOpen)
+                IconButton(
+                  tooltip: context.l10n.searchRecords,
+                  icon: const Icon(LucideIcons.search),
+                  onPressed: () {
+                    setState(() => _searchOpen = true);
+                    _searchFocus.requestFocus();
+                  },
+                ),
+            ],
+          ),
+          if (_searchOpen) ...[const SizedBox(height: 8), searchField],
+        ],
+      );
+    }
     final stacked = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -837,44 +1071,241 @@ class _RecordsToolbarState extends ConsumerState<_RecordsToolbar> {
         Wrap(spacing: 8, runSpacing: 4, children: filters),
       ],
     );
-    if (!wide) return stacked;
-    return LayoutBuilder(
-      builder: (context, constraints) => constraints.maxWidth < 760
-          ? stacked
-          : Row(
-              children: [
-                title,
-                const SizedBox(width: 20),
-                for (final f in filters) ...[f, const SizedBox(width: 8)],
-                const Spacer(),
-                SizedBox(width: 300, child: searchField),
-              ],
-            ),
+    return KeyboardShortcuts(
+      bindings: {cmd(LogicalKeyboardKey.keyF): _searchFocus.requestFocus},
+      child: LayoutBuilder(
+        builder: (context, constraints) => constraints.maxWidth < 760
+            ? stacked
+            : Row(
+                children: [
+                  title,
+                  const SizedBox(width: 20),
+                  // Wraps to a second line instead of overflowing.
+                  Expanded(
+                    child: Wrap(spacing: 8, runSpacing: 6, children: filters),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(width: 260, child: searchField),
+                ],
+              ),
+      ),
     );
   }
 }
 
-/// Column titles above the desktop records table.
-class _TableHeader extends StatelessWidget {
-  const _TableHeader();
+/// The record filters of a register, as chips.
+List<Widget> _recordFilters(
+  BuildContext context,
+  WidgetRef ref,
+  String registerId,
+) {
+  final query = ref.watch(recordQueryProvider(registerId));
+  final notifier = ref.read(recordQueryProvider(registerId).notifier);
+  return [
+    RecordTypeFilter(
+      selected: query.type,
+      onChanged: (type) => notifier.update((q) => q.copyWith(type: () => type)),
+    ),
+    RecordPeriodFilter(
+      selected: query.period,
+      onChanged: (period) =>
+          notifier.update((q) => q.copyWith(period: () => period)),
+    ),
+    RecordMemberFilter(
+      selected: query.memberId,
+      onChanged: (id) => notifier.update((q) => q.copyWith(memberId: () => id)),
+    ),
+    FilterChip(
+      avatar: Icon(
+        LucideIcons.circleDashed,
+        size: 15,
+        color: query.onlyUnsettled ? context.palette.brand : null,
+      ),
+      label: Text(context.l10n.unsettledOnly),
+      selected: query.onlyUnsettled,
+      onSelected: (v) => notifier.update((q) => q.copyWith(onlyUnsettled: v)),
+    ),
+  ];
+}
+
+/// Phones: the filters in one sideways-scrolling row.
+class _PhoneFilterBar extends ConsumerWidget {
+  const _PhoneFilterBar({required this.registerId});
+
+  final String registerId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filters = _recordFilters(context, ref, registerId);
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: filters.length,
+      separatorBuilder: (_, _) => const SizedBox(width: 8),
+      itemBuilder: (_, i) => filters[i],
+    );
+  }
+}
+
+/// A fixed-height bar that stays at the top of the scroll view, with the
+/// page colour behind it and a hairline once content slides underneath.
+class _PinnedBar extends SliverPersistentHeaderDelegate {
+  const _PinnedBar({
+    required this.height,
+    required this.child,
+    this.border = true,
+  });
+
+  final double height;
+  final Widget child;
+  final bool border;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(BuildContext context, double shrink, bool overlaps) {
+    final p = context.palette;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: p.canvas,
+        border: border && overlaps
+            ? Border(bottom: BorderSide(color: p.border))
+            : null,
+      ),
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_PinnedBar old) =>
+      old.height != height || old.child != child || old.border != border;
+}
+
+/// Phone register page: the app bar and the add button follow the scroll
+/// of the records below them.
+class _ScrollChrome extends InheritedWidget {
+  const _ScrollChrome({
+    required this.collapsed,
+    required this.fabExtended,
+    required super.child,
+  });
+
+  /// The balance card has scrolled out of view.
+  final ValueNotifier<bool> collapsed;
+  final ValueNotifier<bool> fabExtended;
+
+  static _ScrollChrome? maybeOf(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<_ScrollChrome>();
+
+  @override
+  bool updateShouldNotify(_ScrollChrome old) => false;
+}
+
+class _PhoneChrome extends StatefulWidget {
+  const _PhoneChrome({required this.builder});
+
+  final Widget Function(
+    ValueNotifier<bool> collapsed,
+    ValueNotifier<bool> fabExtended,
+  )
+  builder;
+
+  @override
+  State<_PhoneChrome> createState() => _PhoneChromeState();
+}
+
+class _PhoneChromeState extends State<_PhoneChrome> {
+  final _collapsed = ValueNotifier(false);
+  final _fabExtended = ValueNotifier(true);
+
+  @override
+  void dispose() {
+    _collapsed.dispose();
+    _fabExtended.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _ScrollChrome(
+    collapsed: _collapsed,
+    fabExtended: _fabExtended,
+    child: widget.builder(_collapsed, _fabExtended),
+  );
+}
+
+/// Column titles above the desktop records table. "Wagt" and "Mukdar"
+/// sort the list; clicking the active one flips the direction.
+class _TableHeader extends ConsumerWidget {
+  const _TableHeader({required this.registerId});
+
+  final String registerId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
+    final p = context.palette;
+    final query = ref.watch(recordQueryProvider(registerId));
     final style = Theme.of(
       context,
-    ).textTheme.labelMedium?.copyWith(color: context.palette.textSubtle);
+    ).textTheme.labelMedium?.copyWith(color: p.textSubtle);
+
+    Widget sortable(RecordSort sort, String label, {bool end = false}) {
+      final on = query.sort == sort;
+      final arrow = Icon(
+        query.ascending ? LucideIcons.arrowUp : LucideIcons.arrowDown,
+        size: 13,
+        color: on ? p.brand : Colors.transparent,
+      );
+      return Tooltip(
+        message: l.sortBy(label),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(6),
+          onTap: () => ref
+              .read(recordQueryProvider(registerId).notifier)
+              .update(
+                (q) => on
+                    ? q.copyWith(ascending: !q.ascending)
+                    : q.copyWith(sort: sort, ascending: false),
+              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment: end
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
+              children: [
+                if (end) ...[arrow, const SizedBox(width: 4)],
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: on ? style?.copyWith(color: p.text) : style,
+                  ),
+                ),
+                if (!end) ...[const SizedBox(width: 4), arrow],
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
       child: Row(
         children: [
           const SizedBox(width: 44),
           Expanded(flex: 5, child: Text(l.colRecord, style: style)),
           Expanded(flex: 2, child: Text(l.colMember, style: style)),
-          SizedBox(width: 64, child: Text(l.colTime, style: style)),
+          SizedBox(width: 64, child: sortable(RecordSort.time, l.colTime)),
           SizedBox(
             width: 150,
-            child: Text(l.colAmount, style: style, textAlign: TextAlign.end),
+            child: sortable(RecordSort.amount, l.colAmount, end: true),
           ),
         ],
       ),
@@ -882,47 +1313,43 @@ class _TableHeader extends StatelessWidget {
   }
 }
 
-class _TypeFilter extends StatelessWidget {
-  const _TypeFilter({required this.selected, required this.onChanged});
+/// While filters are on: how many records match and the cash in and out.
+class _FilteredTotals extends ConsumerWidget {
+  const _FilteredTotals({required this.registerId});
 
-  final RecordType? selected;
-  final ValueChanged<RecordType?> onChanged;
+  final String registerId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (ref.watch(recordQueryProvider(registerId)).isDefault) {
+      return const SizedBox.shrink();
+    }
+    final totals = ref.watch(recordTotalsProvider(registerId)).value;
+    if (totals == null) return const SizedBox.shrink();
+    final l = context.l10n;
     final p = context.palette;
-    return MenuAnchor(
-      alignmentOffset: const Offset(0, 4),
-      menuChildren: [
-        MenuItemButton(
-          onPressed: () => onChanged(null),
-          leadingIcon: const Icon(LucideIcons.layers),
-          child: Text(context.l10n.allTypes),
-        ),
-        for (final type in RecordType.values)
-          MenuItemButton(
-            onPressed: () => onChanged(type),
-            leadingIcon: Icon(type.icon, color: recordTypeTint(context, type)),
-            child: Text(type.label(context.l10n)),
-          ),
-      ],
-      builder: (context, controller, _) => FilterChip(
-        avatar: Icon(
-          selected?.icon ?? LucideIcons.listFilter,
-          size: 15,
-          color: selected != null ? p.brand : null,
-        ),
-        label: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(selected?.label(context.l10n) ?? context.l10n.allTypes),
-            const SizedBox(width: 4),
-            const Icon(LucideIcons.chevronDown, size: 14),
-          ],
-        ),
-        selected: selected != null,
-        onSelected: (_) =>
-            controller.isOpen ? controller.close() : controller.open(),
+    final style = Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: p.textMuted,
+      fontWeight: FontWeight.w600,
+      fontFeatures: tabularFigures,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, left: 4),
+      child: Wrap(
+        spacing: 14,
+        children: [
+          Text(l.dayRecordCount('${totals.count}'), style: style),
+          if (totals.moneyIn > 0)
+            Text(
+              l.totalsIn(Money.signed(totals.moneyIn)),
+              style: style?.copyWith(color: p.positive),
+            ),
+          if (totals.moneyOut > 0)
+            Text(
+              l.totalsOut(Money.signed(-totals.moneyOut)),
+              style: style?.copyWith(color: p.negative),
+            ),
+        ],
       ),
     );
   }

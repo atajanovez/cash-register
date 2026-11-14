@@ -66,6 +66,26 @@ class _RegisterTileState extends State<RegisterTile> {
   bool _hover = false;
 
   @override
+  void didUpdateWidget(RegisterTile old) {
+    super.didUpdateWidget(old);
+    // Picked with the arrow keys: keep it in view.
+    if (widget.selected && !old.selected) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Scrollable.ensureVisible(
+            context,
+            alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+          );
+          Scrollable.ensureVisible(
+            context,
+            alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+          );
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final p = context.palette;
@@ -212,7 +232,7 @@ class _StatusMark extends StatelessWidget {
   }
 }
 
-/// Blue brand card for the headline money figure, like a bank balance.
+/// Teal brand card for the headline money figure, like a bank balance.
 class MoneyHeroCard extends StatelessWidget {
   const MoneyHeroCard({
     super.key,
@@ -355,7 +375,7 @@ class HeroFigure {
   final String? help;
 }
 
-/// Light green / red that stay readable on the blue hero card.
+/// Light green / red that stay readable on the teal hero card.
 Color heroAmountColor(int sign) => sign > 0
     ? const Color(0xFFA6F4C5)
     : sign < 0

@@ -136,10 +136,22 @@ class RecordTile extends StatelessWidget {
 
 /// A record on desktop, as a table row: record, member, time, amount.
 class RecordRow extends StatefulWidget {
-  const RecordRow({super.key, required this.record, required this.onTap});
+  const RecordRow({
+    super.key,
+    required this.record,
+    required this.onTap,
+    this.onMenu,
+    this.selected = false,
+  });
 
   final CashRecord record;
   final VoidCallback onTap;
+
+  /// Shown in the side panel.
+  final bool selected;
+
+  /// Right-click, with the pointer position.
+  final void Function(Offset at)? onMenu;
 
   @override
   State<RecordRow> createState() => _RecordRowState();
@@ -159,9 +171,16 @@ class _RecordRowState extends State<RecordRow> {
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: Material(
-        color: _hover ? p.surfaceMuted : Colors.transparent,
+        color: widget.selected
+            ? p.brandSoft
+            : _hover
+            ? p.surfaceMuted
+            : Colors.transparent,
         child: InkWell(
           onTap: widget.onTap,
+          onSecondaryTapUp: widget.onMenu == null
+              ? null
+              : (d) => widget.onMenu!(d.globalPosition),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
             child: Row(

@@ -9,17 +9,22 @@ import '../../../l10n/l10n.dart';
 import '../domain/cash_record.dart';
 import 'record_tile.dart';
 
-/// Read-only view of one record. Pops with `true` when the user taps
-/// the settle button so the caller can open the settlement form.
+/// Read-only view of one record. As a sheet it pops with `true` when the
+/// user taps the settle button so the caller can open the settlement form;
+/// as a side panel it calls [onSettle] instead.
 class RecordDetailsSheet extends StatelessWidget {
   const RecordDetailsSheet({
     super.key,
     required this.record,
     required this.canSettle,
+    this.onSettle,
+    this.padding,
   });
 
   final CashRecord record;
   final bool canSettle;
+  final VoidCallback? onSettle;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,8 @@ class RecordDetailsSheet extends StatelessWidget {
     final parent = record.parent;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(24, isWide(context) ? 24 : 0, 24, 24),
+      padding:
+          padding ?? EdgeInsets.fromLTRB(24, isWide(context) ? 24 : 0, 24, 24),
       child: SafeArea(
         top: false,
         child: Column(
@@ -147,7 +153,7 @@ class RecordDetailsSheet extends StatelessWidget {
             if (canSettle) ...[
               const SizedBox(height: 20),
               FilledButton.icon(
-                onPressed: () => Navigator.pop(context, true),
+                onPressed: onSettle ?? () => Navigator.pop(context, true),
                 icon: const Icon(LucideIcons.circleCheck),
                 label: Text(record.type.settledBy!.label(l)),
               ),

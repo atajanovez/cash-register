@@ -228,7 +228,8 @@ void main() {
       ..addRegister('Main cash', current: 100, real: 100)
       ..addRegister('Safe');
     await _pump(tester, backend: b, size: const Size(1400, 900));
-    expect(find.text(l.selectRegister), findsOneWidget);
+    // Nothing selected: the company overview fills the right side.
+    expect(find.text(l.overviewTitle), findsOneWidget);
 
     await tester.tap(find.text('Safe'));
     await tester.pumpAndSettle();

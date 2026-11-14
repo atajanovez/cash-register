@@ -71,8 +71,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     text: Color(0xFF101828),
     textMuted: Color(0xFF475467),
     textSubtle: Color(0xFF667085),
-    brand: Color(0xFF2952E3),
-    brandSoft: Color(0xFFEEF2FF),
+    brand: Color(0xFF0F766E),
+    brandSoft: Color(0xFFE6F4F2),
     onBrand: Color(0xFFFFFFFF),
     positive: Color(0xFF067647),
     positiveSoft: Color(0xFFECFDF3),
@@ -80,8 +80,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     negativeSoft: Color(0xFFFEF3F2),
     warning: Color(0xFFB54708),
     warningSoft: Color(0xFFFFFAEB),
-    heroStart: Color(0xFF2F5BEA),
-    heroEnd: Color(0xFF1B3AAE),
+    heroStart: Color(0xFF13857C),
+    heroEnd: Color(0xFF0B5550),
   );
 
   static const dark = AppPalette(
@@ -94,8 +94,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     text: Color(0xFFF2F4F7),
     textMuted: Color(0xFFB0B7C3),
     textSubtle: Color(0xFF8A93A2),
-    brand: Color(0xFF7C9AFF),
-    brandSoft: Color(0xFF1B2448),
+    brand: Color(0xFF14B8A6),
+    brandSoft: Color(0xFF0E2B29),
     onBrand: Color(0xFF0C0E12),
     positive: Color(0xFF47CD89),
     positiveSoft: Color(0xFF0E2A1D),
@@ -103,8 +103,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     negativeSoft: Color(0xFF2E1513),
     warning: Color(0xFFFDB022),
     warningSoft: Color(0xFF2E2210),
-    heroStart: Color(0xFF2448C8),
-    heroEnd: Color(0xFF15296E),
+    heroStart: Color(0xFF0F766E),
+    heroEnd: Color(0xFF09403C),
   );
 
   @override

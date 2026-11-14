@@ -630,5 +630,110 @@
       }
     }
   },
-  "needsInternet": "Munuň üçin internet gerek."
+  "needsInternet": "Munuň üçin internet gerek.",
+  "serverTitle": "Serwer",
+  "serverSubtitle": "Programmanyň haýsy serwere ýüz tutýandygy.",
+  "serverApiUrl": "Esasy serwer",
+  "serverApiUrlHelp": "Giriş, kassalar, ýazgylar we agzalar şu salga gidýär.",
+  "serverSyncUrl": "Sinhronlamak üçin serwer",
+  "serverSyncUrlHelp": "Diňe «Serwerleri sinhronla» düwmesi şu salga ýüz tutýar. Boş goýsaňyz, düwme görünmeýär.",
+  "serverUrlHint": "Mysal: http://192.168.1.158:8083",
+  "serverInvalidUrl": "Dogry salga ýazyň, mysal: http://192.168.1.158:8083",
+  "serverUseDefault": "Adaty serweri ulan",
+  "serverSaved": "Serwer sazlamalary ýatda saklandy",
+  "serverNotSet": "Goýulmady",
+  "serverEdit": "Üýtget",
+  "serverSave": "Ýatda sakla",
+  "serverSyncNow": "Serwerleri sinhronla",
+  "serverSyncRunning": "Serwerler sinhronlanýar…",
+  "serverSyncDone": "Serwerler sinhronlandy",
+  "serverSyncHint": "Ýerli serwer bulut serweri bilen maglumat çalşýar, soňra täze maglumatlar şu ýere ýüklenýär.",
+  "errWrongServer": "Bu kompaniýanyň maglumatlary başga serwerde üýtgedilýär. Şol serwere birikiň.",
+  "syncLoginTitle": "Sinhron serwerine giriş",
+  "syncLoginMessage": "{server} serweriniň öz girişi bar. @{username} üçin açar sözüni giriziň.",
+  "@syncLoginMessage": {
+    "placeholders": {
+      "server": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "syncLoginButton": "Gir we sinhronla",
+  "serverChangeTitle": "Serwer üýtgeýär",
+  "serverChangeMessage": "Täze serwere geçmek üçin hasapdan çykyp, gaýtadan girmeli. Bu enjamdaky maglumatlar täzeden ýüklener.",
+  "serverChangeUnsent": "Ugradylmadyk {count} üýtgeşme bar. Serweri häzir üýtgetseňiz, olar ýiter.",
+  "@serverChangeUnsent": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "serverChangeConfirm": "Çyk we üýtget",
+  "periodAll": "Ähli wagt",
+  "periodToday": "Şu gün",
+  "periodWeek": "Şu hepde",
+  "periodMonth": "Şu aý",
+  "periodCustom": "Senäni saýla…",
+  "allMembers": "Ähli agzalar",
+  "totalsIn": "Girdi {amount}",
+  "@totalsIn": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "totalsOut": "Çykdy {amount}",
+  "@totalsOut": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewTitle": "Umumy syn",
+  "overviewHint": "Jikme-jiklikler üçin çepden kassa saýlaň.",
+  "dueTitle": "Möhletli bergiler",
+  "dueEmpty": "Ýakyn {days} günde möhleti ýetýän bergi ýok.",
+  "@dueEmpty": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "overdueCount": "{count} möhleti geçdi",
+  "@overdueCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "dueSoonCount": "{count} ýakynda",
+  "@dueSoonCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "recentTitle": "Soňky ýazgylar",
+  "recentEmpty": "Entek hiç bir kassada ýazgy ýok.",
+  "copyAmount": "Mukdary göçür",
+  "amountCopied": "Mukdar göçürildi",
+  "statusFilter": "Ýagdaýy boýunça süz",
+  "sortBy": "{column} boýunça tertiple",
+  "@sortBy": {
+    "placeholders": {
+      "column": {
+        "type": "String"
+      }
+    }
+  },
+  "pickRegister": "Haýsy kassa ýazgy goşmaly?"
 }

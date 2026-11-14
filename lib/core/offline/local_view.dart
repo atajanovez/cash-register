@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart' show DateUtils;
+
 import '../../features/members/domain/member.dart';
-import '../../features/records/data/records_repository.dart' show RecordQuery;
+import '../../features/records/data/records_repository.dart'
+    show RecordQuery, RecordSort, RegisterRecord;
 import '../../features/records/domain/cash_record.dart';
 import '../../features/records/domain/record_type.dart';
 import '../../features/registers/domain/cash_register.dart';
@@ -95,7 +98,8 @@ class LocalView {
     for (final json in _members.values) Member.fromJson(json),
   ];
 
-  /// Newest first, filtered like the server's records endpoint.
+  /// Filtered like the server's records endpoint (plus a period), newest
+  /// first unless the query asks otherwise.
   List<CashRecord> records(String registerId, RecordQuery query) {
     final raw = _records[registerId];
     if (raw == null) return const [];
@@ -105,12 +109,25 @@ class LocalView {
       if (parent != null) children.putIfAbsent(parent, () => []).add(r);
     }
     final search = query.search.trim().toLowerCase();
+    final period = query.period;
+    // Local days: the period's last day counts up to its midnight.
+    final from = period == null ? null : DateUtils.dateOnly(period.start);
+    final until = period == null
+        ? null
+        : DateUtils.addDaysToDate(DateUtils.dateOnly(period.end), 1);
 
     final out = <CashRecord>[];
     for (final r in raw.values) {
       if (query.type != null && r['type'] != query.type!.wire) continue;
+      if (query.memberId != null && r['created_by'] != query.memberId) {
+        continue;
+      }
       final record = CashRecord.fromJson(_enrich(r, raw, children));
       if (query.onlyUnsettled && record.remaining <= 0) continue;
+      if (from != null) {
+        final at = record.createdAt.toLocal();
+        if (at.isBefore(from) || !at.isBefore(until!)) continue;
+      }
       if (search.isNotEmpty) {
         final hay = [
           record.note,
@@ -121,8 +138,53 @@ class LocalView {
       }
       out.add(record);
     }
-    out.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    out.sort((a, b) {
+      final c = switch (query.sort) {
+        RecordSort.time => a.createdAt.compareTo(b.createdAt),
+        RecordSort.amount => a.amount.compareTo(b.amount),
+      };
+      // Same amount: newest first, so the order stays stable.
+      final tie = c == 0 ? b.createdAt.compareTo(a.createdAt) : 0;
+      return c == 0 ? tie : (query.ascending ? c : -c);
+    });
     return out;
+  }
+
+  /// Borrows, loans and accrued income with something left to settle and a
+  /// due date, across every register this member can see; earliest first.
+  List<RegisterRecord> openObligations() {
+    final out = <RegisterRecord>[];
+    for (final registerId in _records.keys) {
+      final register = this.register(registerId);
+      if (register == null) continue;
+      for (final record in records(
+        registerId,
+        const RecordQuery(onlyUnsettled: true),
+      )) {
+        if (record.deadline != null) {
+          out.add((register: register, record: record));
+        }
+      }
+    }
+    out.sort((a, b) => a.record.deadline!.compareTo(b.record.deadline!));
+    return out;
+  }
+
+  /// The newest records of every visible register, for the overview.
+  List<RegisterRecord> recentRecords(int limit) {
+    final out = <RegisterRecord>[];
+    for (final registerId in _records.keys) {
+      final register = this.register(registerId);
+      if (register == null) continue;
+      for (final record in records(
+        registerId,
+        const RecordQuery(),
+      ).take(limit)) {
+        out.add((register: register, record: record));
+      }
+    }
+    out.sort((a, b) => b.record.createdAt.compareTo(a.record.createdAt));
+    return out.take(limit).toList();
   }
 
   /// Fills in what list responses embed (creator, parent, children, the

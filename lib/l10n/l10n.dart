@@ -114,6 +114,7 @@ String describeError(AppLocalizations l, Object error) {
     'username_taken' => l.errUsernameTaken,
     'cash_register_name_taken' => l.registerNameTaken,
     'deadline_required' => l.errDeadlineRequired,
+    'wrong_server' => l.errWrongServer,
     'invalid_request' => l.errInvalidRequest(message),
     'conflict' when says('insufficient') => l.errInsufficientFunds,
     'conflict' when says("parent's unsettled") => l.errSettlementTooLarge,

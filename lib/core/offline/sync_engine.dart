@@ -260,6 +260,15 @@ class SyncEngine extends ChangeNotifier {
           ..status = OutboxStatus.sent
           ..sentAt = DateTime.now();
       } on ApiException catch (e) {
+        // A create we retried after losing the reply: the server already
+        // has it under our id.
+        if (e.code == 'duplicate_value' && op.type.endsWith('.create')) {
+          op
+            ..status = OutboxStatus.sent
+            ..sentAt = DateTime.now();
+          store.changed();
+          continue;
+        }
         final s = e.statusCode;
         // Connection, auth and server trouble: keep it and try later.
         if (e.isNetwork ||
@@ -298,6 +307,8 @@ class SyncEngine extends ChangeNotifier {
       case 'record.create':
         remember(
           await remote.createRecord(id(p['cash_register_id'])!, {
+            // Our own id makes a retry after a lost reply safe.
+            'id': op.entityId,
             'type': p['type'],
             'amount': p['amount'],
             'note': ?p['note'],
@@ -311,6 +322,7 @@ class SyncEngine extends ChangeNotifier {
       case 'cash_register.create':
         remember(
           await remote.createRegister({
+            'id': op.entityId,
             'name': p['name'],
             'members': members(p['members']),
           }),

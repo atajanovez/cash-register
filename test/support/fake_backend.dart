@@ -262,16 +262,51 @@ class _FakeRecords implements RecordsRepository {
     int limit = RecordsRepository.pageSize,
   }) async {
     final q = query.search.toLowerCase();
-    return (b.records[registerId] ?? const [])
+    final found = (b.records[registerId] ?? const <CashRecord>[])
         .where((r) => query.type == null || r.type == query.type)
         .where(
           (r) => !query.onlyUnsettled || (r.type.isOpening && r.remaining > 0),
         )
         .where((r) => q.isEmpty || r.note.toLowerCase().contains(q))
-        .skip(offset)
-        .take(limit)
+        .where((r) => query.memberId == null || r.createdBy == query.memberId)
         .toList();
+    // Stored newest first; a stable sort keeps that for equal keys.
+    if (query.sort == RecordSort.amount) {
+      final at = {for (final (i, r) in found.indexed) r.id: i};
+      found.sort((a, b) {
+        final c = query.ascending
+            ? a.amount.compareTo(b.amount)
+            : b.amount.compareTo(a.amount);
+        return c != 0 ? c : at[a.id]!.compareTo(at[b.id]!);
+      });
+    } else if (query.ascending) {
+      found.setAll(0, found.reversed.toList());
+    }
+    return found.skip(offset).take(limit).toList();
   }
+
+  @override
+  Future<RecordTotals> totals(String registerId, RecordQuery query) async =>
+      RecordTotals.of(await list(registerId, query, limit: 1 << 30));
+
+  List<RegisterRecord> get _all => [
+    for (final r in b.registers)
+      for (final record in b.records[r.id] ?? const <CashRecord>[])
+        (register: r, record: record),
+  ];
+
+  @override
+  Future<List<RegisterRecord>> openObligations() async =>
+      _all
+          .where((e) => e.record.remaining > 0 && e.record.deadline != null)
+          .toList()
+        ..sort((a, b) => a.record.deadline!.compareTo(b.record.deadline!));
+
+  @override
+  Future<List<RegisterRecord>> recent({int limit = 8}) async =>
+      (_all..sort((a, b) => b.record.createdAt.compareTo(a.record.createdAt)))
+          .take(limit)
+          .toList();
 
   @override
   Future<CashRecord> create(String registerId, RecordDraft draft) async =>
