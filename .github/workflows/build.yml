@@ -26,6 +26,14 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build windows --release
+      - name: Add the Visual C++ runtime
+        shell: pwsh
+        # Fresh Windows installs may not have it; next to the exe the app
+        # finds it without installing anything.
+        run: |
+          foreach ($dll in 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll') {
+            Copy-Item "$env:WINDIR\System32\$dll" build\windows\x64\runner\Release\
+          }
       - name: Zip
         shell: pwsh
         run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath CashRegister-windows.zip
